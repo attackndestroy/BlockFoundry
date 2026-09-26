@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Loading...</title>
+</head>
+<body>
+<script>
+(async () => {
+  const match = location.pathname.match(/(\d+)\.html$/);
+  if (!match) { document.body.textContent = 'Invalid URL'; return; }
+
+  const pageNumber = parseInt(match[1]);
+  const tpl = await fetch('tmp.html').then(r => r.text());
+  const data = await fetch('a.json').then(r => r.json());
+
+  const item = data.find(x => x.n === pageNumber);
+  if (!item) { document.body.textContent = 'Page not found'; return; }
+
+  let html = tpl;
+  for (const key in item) {
+    html = html.replaceAll('{{' + key + '}}', item[key]);
+  }
+
+  document.open();
+  document.write(html);
+  document.close();
+})();
+</script>
+</body>
+</html>
