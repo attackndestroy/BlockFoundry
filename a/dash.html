@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Publishing Panel — BlockFoundry</title>
+
+<link rel="icon" type="image/x-icon" href="./fav.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0a0a0a;
+  --bg-2:#111;
+  --bg-3:#181818;
+  --bg-4:#202020;
+  --border:#262626;
+  --border-2:#333;
+  --text:#e8e8e8;
+  --dim:#8a8a8a;
+  --accent:#ffcc00;
+  --accent-2:#ffd633;
+  --accent-dk:#cc9900;
+  --green:#00d26a;
+  --red:#ff4757;
+  --blue:#4d9eff;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Cairo','Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.7;
+  min-height:100vh;
+  padding-bottom:60px;
+}
+
+.setup-overlay{
+  position:fixed;
+  inset:0;
+  z-index:5000;
+  background:rgba(0,0,0,0.95);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.setup-overlay.hidden{
+  display:none;
+}
+
+.setup-card{
+  background:var(--bg-2);
+  border:2px solid var(--accent);
+  border-radius:16px;
+  padding:35px;
+  max-width:520px;
+  width:100%;
+  box-shadow:0 0 60px rgba(255,204,0,0.2);
+}
+
+.setup-card h2{
+  color:var(--accent);
+  font-size:1.5em;
+  font-weight:900;
+  margin-bottom:8px;
+  text-align:center;
+}
+
+.setup-card p{
+  color:var(--dim);
+  text-align:center;
+  margin-bottom:25px;
+  font-size:0.95em;
+}
+
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(10,10,10,0.9);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.topbar .logo{
+  color:var(--accent);
+  font-weight:900;
+  font-size:1.1em;
+}
+
+.topbar .actions button{
+  padding:8px 16px;
+  font-size:0.85em;
+}
+
+.hero{
+  position:relative;
+  padding:35px 20px 40px;
+  text-align:center;
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 0%,rgba(255,204,0,0.15) 0%,transparent 60%);
+}
+
+.hero::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,transparent 49.5%,rgba(255,204,0,0.08) 49.5%,rgba(255,204,0,0.08) 50.5%,transparent 50.5%),
+    linear-gradient(0deg,transparent 49.5%,rgba(255,204,0,0.05) 49.5%,rgba(255,204,0,0.05) 50.5%,transparent 50.5%);
+  background-size:40px 40px;
+  opacity:0.3;
+  pointer-events:none;
+}
+
+.hero-inner{
+  position:relative;
+  z-index:1;
+  max-width:900px;
+  margin:0 auto;
+}
+
+.header-image{
+  width:100%;
+  max-width:900px;
+  max-height:180px;
+  object-fit:cover;
+  display:block;
+  margin:0 auto 25px;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+
+.hero h1{
+  font-size:clamp(1.8em,5vw,3em);
+  font-weight:900;
+  background:linear-gradient(135deg,#ffcc00 0%,#fff8dc 50%,#ffcc00 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 20px rgba(255,204,0,0.3));
+  margin-bottom:10px;
+  animation:shine 3s ease-in-out infinite;
+  background-size:200% auto;
+}
+
+@keyframes shine{
+  0%,100%{background-position:0% center;}
+  50%{background-position:100% center;}
+}
+
+.hero .subtitle{
+  color:var(--dim);
+  font-size:1.05em;
+  font-weight:600;
+}
+
+.hero .crown{
+  font-size:2.5em;
+  display:block;
+  margin-bottom:10px;
+  filter:drop-shadow(0 0 20px rgba(255,204,0,0.6));
+  animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-8px);}
+}
+
+.hero .time-badge{
+  display:inline-block;
+  margin-top:15px;
+  padding:6px 18px;
+  background:var(--bg-3);
+  border:1px solid var(--accent);
+  border-radius:20px;
+  font-size:0.85em;
+  color:var(--accent);
+  font-weight:700;
+}
+
+.container{
+  max-width:1000px;
+  margin:0 auto;
+  padding:0 20px;
+}
+
+.card{
+  background:var(--bg-2);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:25px;
+  margin-bottom:22px;
+}
+
+.card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+  padding-bottom:15px;
+  border-bottom:2px solid var(--accent);
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.card-header h2{
+  color:var(--accent);
+  font-size:1.3em;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.card-header .num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:32px;
+  height:32px;
+  background:var(--accent);
+  color:#000;
+  border-radius:50%;
+  font-size:0.9em;
+  font-weight:900;
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  color:var(--dim);
+  font-size:0.9em;
+  font-weight:600;
+}
+
+label .req{
+  color:var(--red);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="url"],
+input[type="file"],
+textarea,
+select{
+  font-family:'Cairo',sans-serif;
+  font-size:1em;
+  padding:11px 14px;
+  border-radius:8px;
+  border:1px solid var(--border-2);
+  background:var(--bg-3);
+  color:var(--text);
+  width:100%;
+  margin-bottom:14px;
+  transition:border-color 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  outline:none;
+  border-color:var(--accent);
+}
+
+textarea{
+  resize:vertical;
+  min-height:90px;
+  line-height:1.6;
+}
+
+button{
+  font-family:'Cairo',sans-serif;
+  font-size:1em;
+  font-weight:700;
+  padding:11px 24px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  transition:transform 0.15s,box-shadow 0.15s;
+  margin-left:6px;
+  margin-bottom:6px;
+}
+
+button:hover{
+  transform:translateY(-1px);
+}
+
+button:active{
+  transform:translateY(0);
+}
+
+.btn-primary{
+  background:var(--accent);
+  color:#000;
+  box-shadow:0 4px 0 var(--accent-dk);
+}
+
+.btn-primary:hover{
+  box-shadow:0 5px 0 var(--accent-dk);
+}
+
+.btn-secondary{
+  background:var(--bg-3);
+  color:var(--accent);
+  border:1.5px solid var(--accent);
+}
+
+.btn-danger{
+  background:var(--bg-3);
+  color:var(--red);
+  border:1.5px solid var(--red);
+}
+
+.btn-block{
+  width:100%;
+  margin-left:0;
+}
+
+.status{
+  padding:12px 16px;
+  border-radius:8px;
+  margin:12px 0;
+  font-size:0.95em;
+  font-weight:600;
+  display:none;
+}
+
+.status.show{
+  display:block;
+}
+
+.status.ok{
+  background:rgba(0,210,106,0.12);
+  color:var(--green);
+  border:1px solid rgba(0,210,106,0.4);
+}
+
+.status.err{
+  background:rgba(255,71,87,0.12);
+  color:var(--red);
+  border:1px solid rgba(255,71,87,0.4);
+}
+
+.status.info{
+  background:rgba(77,158,255,0.12);
+  color:var(--blue);
+  border:1px solid rgba(77,158,255,0.4);
+}
+
+.img-preview{
+  display:none;
+  margin:10px 0 15px;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid var(--border-2);
+  max-width:100%;
+}
+
+.img-preview img{
+  width:100%;
+  max-height:280px;
+  object-fit:cover;
+  display:block;
+}
+
+.json-box{
+  position:relative;
+  background:#0d0d0d;
+  border:1px solid var(--border-2);
+  border-radius:10px;
+  padding:18px;
+  font-family:'Courier New',monospace;
+  font-size:0.85em;
+  color:#ffd580;
+  max-height:400px;
+  overflow:auto;
+  white-space:pre;
+  direction:ltr;
+  text-align:left;
+  line-height:1.5;
+}
+
+.json-box::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+.json-box::-webkit-scrollbar-track{
+  background:#1a1a1a;
+}
+
+.json-box::-webkit-scrollbar-thumb{
+  background:#333;
+  border-radius:4px;
+}
+
+.copy-btn{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:var(--accent);
+  color:#000;
+  padding:6px 14px;
+  font-size:0.85em;
+  border-radius:6px;
+  margin:0;
+}
+
+.mod-item{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:14px;
+  background:var(--bg-3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:10px;
+  transition:border-color 0.2s;
+}
+
+.mod-item:hover{
+  border-color:var(--accent);
+}
+
+.mod-item img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:8px;
+  flex-shrink:0;
+  background:var(--bg-4);
+}
+
+.mod-info{
+  flex:1;
+  min-width:0;
+}
+
+.mod-info .title{
+  font-weight:700;
+  color:#fff;
+  margin-bottom:4px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mod-info .meta{
+  font-size:0.8em;
+  color:var(--dim);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mod-info .id-badge{
+  display:inline-block;
+  background:var(--accent);
+  color:#000;
+  font-size:0.7em;
+  font-weight:900;
+  padding:2px 8px;
+  border-radius:10px;
+  margin-right:5px;
+}
+
+.mod-actions{
+  display:flex;
+  gap:6px;
+  flex-shrink:0;
+}
+
+.mod-actions button{
+  padding:7px 14px;
+  font-size:0.85em;
+  margin:0;
+}
+
+.search-input{
+  margin-bottom:18px !important;
+}
+
+.empty{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--dim);
+}
+
+.empty .icon{
+  font-size:3em;
+  margin-bottom:10px;
+  display:block;
+}
+
+.hidden{
+  display:none !important;
+}
+
+@media(max-width:600px){
+  .mod-item{
+    flex-wrap:wrap;
+  }
+
+  .mod-actions{
+    width:100%;
+    justify-content:flex-end;
+  }
+
+  .header-image{
+    max-height:120px;
+  }
+
+  .hero{
+    padding-top:25px;
+  }
+
+  .card{
+    padding:18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="setup-overlay hidden" id="setupOverlay">
+  <div class="setup-card">
+
+    <h2>👑 Welcome to BlockFoundry</h2>
+
+    <p>Enter your GitHub details once. They will be saved in your browser.</p>
+
+    <label>Username</label>
+    <input type="text" id="setup_user" placeholder="GitHub username">
+
+    <label>Repository</label>
+    <input type="text" id="setup_repo" value="blockfoundry" placeholder="Repository name">
+
+    <label>Personal Access Token</label>
+    <input type="password" id="setup_token" placeholder="GitHub token">
+
+    <div style="margin-top:15px;">
+      <button class="btn-primary btn-block" onclick="saveSetup()">
+        💾 Save & Continue
+      </button>
+    </div>
+
+    <div class="status" id="setupStatus"></div>
+
+  </div>
+</div>
+
+<div class="topbar">
+
+  <div class="logo">⚙️ BlockFoundry Publishing Panel</div>
+
+  <div class="actions">
+
+    <button class="btn-secondary" onclick="openSettings()">
+      🔧 Settings
+    </button>
+
+    <button class="btn-secondary" onclick="loadFromGitHub()">
+      🔄 Refresh
+    </button>
+
+  </div>
+
+</div>
+
+<div class="hero">
+
+  <div class="hero-inner">
+
+    <img
+      class="header-image"
+      src="./header.png"
+      alt="BlockFoundry"
+    >
+
+    <span class="crown">👑</span>
+
+    <h1 id="greeting">
+      Welcome
+    </h1>
+
+    <div class="subtitle" id="greetingSub">
+      Your private mod publishing dashboard
+    </div>
+
+    <div class="time-badge" id="timeBadge"></div>
+
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="card hidden" id="settingsPanel" style="display:none;border:2px solid var(--accent);">
+
+    <div class="card-header">
+
+      <h2>🔧 Settings</h2>
+
+      <button class="btn-secondary" onclick="closeSettings()">
+        ✖ Close
+      </button>
+
+    </div>
+
+    <label>Username</label>
+    <input type="text" id="ghUser">
+
+    <label>Repository</label>
+    <input type="text" id="ghRepo" value="blockfoundry">
+
+    <label>Branch</label>
+    <input type="text" id="ghBranch" value="main">
+
+    <label>Path to a.json</label>
+    <input type="text" id="ghPath" value="a/a.json">
+
+    <label>Image Folder</label>
+    <input type="text" id="ghImgFolder" value="img/a">
+
+    <label>Personal Access Token</label>
+    <input type="password" id="ghToken">
+
+    <div style="margin-top:15px;">
+
+      <button class="btn-primary" onclick="saveSettings()">
+        💾 Save
+      </button>
+
+      <button class="btn-danger" onclick="resetSettings()">
+        🗑️ Clear Session
+      </button>
+
+    </div>
+
+    <div class="status" id="settingsStatus"></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <h2>
+        <span class="num">1</span>
+        Publish New Mod
+      </h2>
+
+    </div>
+
+    <label>
+      ID <span class="req">*</span>
+    </label>
+
+    <input
+      type="number"
+      id="f_id"
+      placeholder="Example: 1"
+    >
+
+    <div style="color:var(--dim);font-size:0.85em;margin-top:-8px;margin-bottom:14px;">
+      This number will be used for the image and HTML page name.
+    </div>
+
+    <label>
+      Title <span class="req">*</span>
+    </label>
+
+    <input
+      type="text"
+      id="f_title"
+      placeholder="Example: Item Pets"
+    >
+
+    <label>
+      Description <span class="req">*</span>
+    </label>
+
+    <textarea
+      id="f_desc"
+      placeholder="Write the mod description..."
+    ></textarea>
+
+    <label>
+      Image <span class="req">*</span>
+    </label>
+
+    <input
+      type="file"
+      id="f_image"
+      accept="image/*"
+      onchange="uploadImage(event)"
+    >
+
+    <div class="img-preview" id="imgPreview">
+
+      <img
+        id="imgPreviewSrc"
+        src=""
+        alt="Preview"
+      >
+
+    </div>
+
+    <input
+      type="text"
+      id="f_imageUrl"
+      placeholder="Image path will appear here automatically"
+      readonly
+    >
+
+    <label>
+      Final Download URL <span class="req">*</span>
+    </label>
+
+    <input
+      type="url"
+      id="f_link"
+      placeholder="https://example.com/download"
+    >
+
+    <div style="margin-top:10px;">
+
+      <button
+        class="btn-primary btn-block"
+        onclick="publishMod()"
+      >
+        🚀 Publish Mod
+      </button>
+
+    </div>
+
+    <div class="status" id="publishStatus"></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <h2>
+        <span class="num">2</span>
+        a.json Content
+      </h2>
+
+      <button
+        class="btn-secondary"
+        onclick="downloadJson()"
+      >
+        📦 Download
+      </button>
+
+    </div>
+
+    <div class="json-box">
+
+      <button
+        class="copy-btn"
+        onclick="copyJson()"
+      >
+        📋 Copy All
+      </button>
+
+      <span id="jsonContent">
+        Loading...
+      </span>
+
+    </div>
+
+    <div class="status" id="jsonStatus"></div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <h2>
+        <span class="num">3</span>
+        Edit or Delete Mods
+      </h2>
+
+      <span
+        id="modsCount"
+        style="color:var(--dim);font-size:0.9em;"
+      ></span>
+
+    </div>
+
+    <input
+      type="text"
+      class="search-input"
+      id="searchInput"
+      placeholder="🔍 Search by title or ID..."
+      oninput="renderModsList()"
+    >
+
+    <div id="modsList"></div>
+
+  </div>
+
+</div>
+
+<div
+  id="editModal"
+  style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    z-index:1000;
+    padding:20px;
+    overflow-y:auto;
+  "
+>
+
+  <div
+    style="
+      max-width:600px;
+      margin:40px auto;
+      background:var(--bg-2);
+      border:2px solid var(--accent);
+      border-radius:14px;
+      padding:25px;
+    "
+  >
+
+    <h3 style="color:var(--accent);margin-bottom:20px;">
+      ✏️ Edit Mod #<span id="editIdLabel"></span>
+    </h3>
+
+    <label>Title</label>
+    <input type="text" id="edit_t">
+
+    <label>Description</label>
+    <textarea id="edit_d"></textarea>
+
+    <label>Image Path</label>
+    <input type="text" id="edit_i">
+
+    <input
+      type="file"
+      accept="image/*"
+      onchange="uploadImageEdit(event)"
+      style="margin-top:6px;"
+    >
+
+    <div class="img-preview" id="editImgPreview">
+
+      <img
+        id="editImgPreviewSrc"
+        src=""
+        alt="Preview"
+      >
+
+    </div>
+
+    <label>Final Download URL</label>
+    <input type="url" id="edit_l">
+
+    <label>ID</label>
+    <input type="number" id="edit_n">
+
+    <div style="margin-top:15px;">
+
+      <button
+        class="btn-primary"
+        onclick="saveEdit()"
+      >
+        💾 Save Changes
+      </button>
+
+      <button
+        class="btn-secondary"
+        onclick="closeEdit()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+    <div class="status" id="editStatus"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+let cfg = {};
+let mods = [];
+let currentEditId = null;
+let currentJsonSha = null;
+
+function setGreeting(){
+
+  const h = new Date().getHours();
+
+  const g = document.getElementById('greeting');
+  const s = document.getElementById('greetingSub');
+  const b = document.getElementById('timeBadge');
+
+  let text;
+  let sub;
+  let emoji;
+
+  if(h >= 5 && h < 12){
+
+    text = 'Good Morning, Mod Builder 👑';
+    sub = 'Ready to publish something new?';
+    emoji = '🌅';
+
+  }else if(h >= 12 && h < 17){
+
+    text = 'Good Afternoon, Builder 💛';
+    sub = 'Keep building BlockFoundry.';
+    emoji = '☀️';
+
+  }else if(h >= 17 && h < 22){
+
+    text = 'Good Evening, Creator ✨';
+    sub = 'A great time to publish new mods.';
+    emoji = '🌆';
+
+  }else{
+
+    text = 'Late Night, Builder 🌙';
+    sub = 'Keep creating, but remember to rest.';
+    emoji = '🌌';
+
+  }
+
+  g.textContent = text;
+  s.textContent = sub;
+
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+
+  const now = new Date();
+
+  const timeStr = now.toLocaleTimeString('en-US',{
+    hour:'2-digit',
+    minute:'2-digit'
+  });
+
+  b.textContent =
+    `${emoji}  ${days[now.getDay()]} — ${timeStr}`;
+}
+
+setGreeting();
+
+setInterval(setGreeting,60000);
+
+function showSetupOverlay(){
+  document
+    .getElementById('setupOverlay')
+    .classList
+    .remove('hidden');
+}
+
+function saveSetup(){
+
+  const user =
+    document.getElementById('setup_user')
+    .value
+    .trim();
+
+  const repo =
+    document.getElementById('setup_repo')
+    .value
+    .trim();
+
+  const token =
+    document.getElementById('setup_token')
+    .value
+    .trim();
+
+  if(!user || !repo || !token){
+
+    setStatus(
+      'setupStatus',
+      'err',
+      '❌ Please complete all fields.'
+    );
+
+    return;
+  }
+
+  cfg = {
+    ghUser:user,
+    ghRepo:repo || 'blockfoundry',
+    ghBranch:'main',
+    ghPath:'a/a.json',
+    ghImgFolder:'img/a',
+    ghToken:token
+  };
+
+  localStorage.setItem(
+    'blockfoundry_cfg',
+    JSON.stringify(cfg)
+  );
+
+  setStatus(
+    'setupStatus',
+    'ok',
+    '✅ Saved. Loading repository...'
+  );
+
+  setTimeout(()=>{
+
+    document
+      .getElementById('setupOverlay')
+      .classList
+      .add('hidden');
+
+    loadFromGitHub();
+
+  },900);
+}
+
+function loadSettings(){
+
+  const saved =
+    localStorage.getItem('blockfoundry_cfg') ||
+    localStorage.getItem('attdes_cfg');
+
+  if(!saved){
+
+    showSetupOverlay();
+
+    return false;
+  }
+
+  try{
+
+    cfg = JSON.parse(saved);
+
+    if(!cfg.ghRepo){
+      cfg.ghRepo = 'blockfoundry';
+    }
+
+    fillSettingsForm();
+
+    return true;
+
+  }catch(e){
+
+    showSetupOverlay();
+
+    return false;
+  }
+}
+
+function openSettings(){
+
+  fillSettingsForm();
+
+  const panel =
+    document.getElementById('settingsPanel');
+
+  panel.style.display = 'block';
+
+  panel.scrollIntoView({
+    behavior:'smooth',
+    block:'start'
+  });
+}
+
+function closeSettings(){
+
+  document
+    .getElementById('settingsPanel')
+    .style
+    .display = 'none';
+}
+
+function fillSettingsForm(){
+
+  document.getElementById('ghUser').value =
+    cfg.ghUser || '';
+
+  document.getElementById('ghRepo').value =
+    cfg.ghRepo || 'blockfoundry';
+
+  document.getElementById('ghBranch').value =
+    cfg.ghBranch || 'main';
+
+  document.getElementById('ghPath').value =
+    cfg.ghPath || 'a/a.json';
+
+  document.getElementById('ghImgFolder').value =
+    cfg.ghImgFolder || 'img/a';
+
+  document.getElementById('ghToken').value =
+    cfg.ghToken || '';
+}
+
+function saveSettings(){
+
+  const c = {
+
+    ghUser:
+      document.getElementById('ghUser')
+      .value
+      .trim(),
+
+    ghRepo:
+      document.getElementById('ghRepo')
+      .value
+      .trim() || 'blockfoundry',
+
+    ghBranch:
+      document.getElementById('ghBranch')
+      .value
+      .trim() || 'main',
+
+    ghPath:
+      document.getElementById('ghPath')
+      .value
+      .trim() || 'a/a.json',
+
+    ghImgFolder:
+      document.getElementById('ghImgFolder')
+      .value
+      .trim() || 'img/a',
+
+    ghToken:
+      document.getElementById('ghToken')
+      .value
+      .trim()
+
+  };
+
+  if(!c.ghUser || !c.ghRepo || !c.ghToken){
+
+    setStatus(
+      'settingsStatus',
+      'err',
+      '❌ Please complete all required fields.'
+    );
+
+    return;
+  }
+
+  localStorage.setItem(
+    'blockfoundry_cfg',
+    JSON.stringify(c)
+  );
+
+  cfg = c;
+
+  setStatus(
+    'settingsStatus',
+    'ok',
+    '✅ Settings saved.'
+  );
+
+  setTimeout(()=>{
+
+    closeSettings();
+    loadFromGitHub();
+
+  },900);
+}
+
+function resetSettings(){
+
+  if(!confirm(
+    'This will clear your GitHub session. Continue?'
+  )) return;
+
+  localStorage.removeItem('blockfoundry_cfg');
+  localStorage.removeItem('attdes_cfg');
+
+  location.reload();
+}
+
+const API = 'https://api.github.com';
+
+async function ghGet(path){
+
+  const r = await fetch(
+    `${API}/repos/${cfg.ghUser}/${cfg.ghRepo}/contents/${path}?ref=${cfg.ghBranch}&t=${Date.now()}`,
+    {
+      headers:{
+        'Authorization':`token ${cfg.ghToken}`,
+        'Accept':'application/vnd.github.v3+json'
+      }
+    }
+  );
+
+  if(r.status === 404){
+    return null;
+  }
+
+  if(!r.ok){
+    throw new Error(
+      'GitHub request failed: ' + r.status
+    );
+  }
+
+  return r.json();
+}
+
+async function ghPut(
+  path,
+  contentBase64,
+  message,
+  shaToUse
+){
+
+  const body = {
+    message,
+    content:contentBase64,
+    branch:cfg.ghBranch
+  };
+
+  if(shaToUse){
+    body.sha = shaToUse;
+  }
+
+  const r = await fetch(
+    `${API}/repos/${cfg.ghUser}/${cfg.ghRepo}/contents/${path}`,
+    {
+      method:'PUT',
+      headers:{
+        'Authorization':`token ${cfg.ghToken}`,
+        'Accept':'application/vnd.github.v3+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(body)
+    }
+  );
+
+  if(!r.ok){
+
+    const err = await r.text();
+
+    throw new Error(
+      'GitHub save failed: ' + r.status
+    );
+  }
+
+  return r.json();
+}
+
+async function loadFromGitHub(){
+
+  if(!cfg.ghUser){
+    return;
+  }
+
+  setStatus(
+    'jsonStatus',
+    'info',
+    '⏳ Loading a.json...'
+  );
+
+  try{
+
+    const file =
+      await ghGet(cfg.ghPath);
+
+    if(!file){
+
+      mods = [];
+      currentJsonSha = null;
+
+    }else{
+
+      currentJsonSha = file.sha;
+
+      const content =
+        decodeURIComponent(
+          escape(
+            atob(
+              file.content.replace(/\n/g,'')
+            )
+          )
+        );
+
+      mods = JSON.parse(content);
+
+    }
+
+    renderJson();
+    renderModsList();
+
+    setStatus(
+      'jsonStatus',
+      'ok',
+      `✅ Loaded successfully — ${mods.length} mods`
+    );
+
+  }catch(e){
+
+    setStatus(
+      'jsonStatus',
+      'err',
+      '❌ ' + e.message
+    );
+
+  }
+}
+
+function renderJson(){
+
+  document.getElementById('jsonContent')
+    .textContent =
+      JSON.stringify(mods,null,2);
+}
+
+function copyJson(){
+
+  const text =
+    JSON.stringify(mods,null,2);
+
+  navigator.clipboard
+    .writeText(text)
+    .then(()=>{
+
+      setStatus(
+        'jsonStatus',
+        'ok',
+        '✅ JSON copied.'
+      );
+
+    })
+    .catch(()=>{
+
+      const ta =
+        document.createElement('textarea');
+
+      ta.value = text;
+
+      document.body.appendChild(ta);
+
+      ta.select();
+
+      document.execCommand('copy');
+
+      ta.remove();
+
+      setStatus(
+        'jsonStatus',
+        'ok',
+        '✅ JSON copied.'
+      );
+
+    });
+}
+
+function downloadJson(){
+
+  const blob =
+    new Blob(
+      [JSON.stringify(mods,null,2)],
+      {type:'application/json'}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement('a');
+
+  a.href = url;
+
+  a.download = 'a.json';
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function toDisplayUrl(path){
+
+  if(!path){
+    return '';
+  }
+
+  if(path.startsWith('http')){
+    return path;
+  }
+
+  const clean =
+    path
+      .replace(/^\.\.\//,'')
+      .replace(/^\//,'');
+
+  return `https://raw.githubusercontent.com/${cfg.ghUser}/${cfg.ghRepo}/${cfg.ghBranch}/${clean}`;
+}
+
+async function uploadImage(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file){
+    return;
+  }
+
+  let id =
+    parseInt(
+      document.getElementById('f_id').value
+    );
+
+  if(!id){
+
+    id =
+      mods.length > 0
+        ? Math.max(...mods.map(m=>m.n)) + 1
+        : 1;
+
+    document.getElementById('f_id').value = id;
+  }
+
+  if(file.size > 5 * 1024 * 1024){
+
+    setStatus(
+      'publishStatus',
+      'err',
+      '❌ Image is too large. Maximum size is 5 MB.'
+    );
+
+    return;
+  }
+
+  setStatus(
+    'publishStatus',
+    'info',
+    '⏳ Uploading image to GitHub...'
+  );
+
+  const ext =
+    (file.name.split('.').pop() || 'jpg')
+    .toLowerCase();
+
+  const filename =
+    `${id}.${ext}`;
+
+  const repoPath =
+    `${cfg.ghImgFolder}/${filename}`;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = async ()=>{
+
+    try{
+
+      const b64 =
+        reader.result.split(',')[1];
+
+      let existingSha = null;
+
+      try{
+
+        const existing =
+          await ghGet(repoPath);
+
+        if(existing){
+          existingSha = existing.sha;
+        }
+
+      }catch(e){}
+
+      await ghPut(
+        repoPath,
+        b64,
+        `Upload mod image ${id}`,
+        existingSha
+      );
+
+      const relativePath =
+        `../${cfg.ghImgFolder}/${filename}`;
+
+      document.getElementById('f_imageUrl')
+        .value = relativePath;
+
+      document.getElementById('imgPreviewSrc')
+        .src = toDisplayUrl(relativePath);
+
+      document.getElementById('imgPreview')
+        .style.display = 'block';
+
+      setStatus(
+        'publishStatus',
+        'ok',
+        `✅ Image uploaded: ${repoPath}`
+      );
+
+    }catch(e){
+
+      setStatus(
+        'publishStatus',
+        'err',
+        '❌ ' + e.message
+      );
+
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+}
+
+async function uploadImageEdit(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file){
+    return;
+  }
+
+  let id =
+    parseInt(
+      document.getElementById('edit_n').value
+    );
+
+  if(!id){
+
+    setStatus(
+      'editStatus',
+      'err',
+      '❌ Enter an ID first.'
+    );
+
+    return;
+  }
+
+  if(file.size > 5 * 1024 * 1024){
+
+    setStatus(
+      'editStatus',
+      'err',
+      '❌ Image is too large. Maximum size is 5 MB.'
+    );
+
+    return;
+  }
+
+  setStatus(
+    'editStatus',
+    'info',
+    '⏳ Uploading image...'
+  );
+
+  const ext =
+    (file.name.split('.').pop() || 'jpg')
+    .toLowerCase();
+
+  const filename =
+    `${id}.${ext}`;
+
+  const repoPath =
+    `${cfg.ghImgFolder}/${filename}`;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = async ()=>{
+
+    try{
+
+      const b64 =
+        reader.result.split(',')[1];
+
+      let existingSha = null;
+
+      try{
+
+        const existing =
+          await ghGet(repoPath);
+
+        if(existing){
+          existingSha = existing.sha;
+        }
+
+      }catch(e){}
+
+      await ghPut(
+        repoPath,
+        b64,
+        `Update mod image ${id}`,
+        existingSha
+      );
+
+      const relativePath =
+        `../${cfg.ghImgFolder}/${filename}`;
+
+      document.getElementById('edit_i')
+        .value = relativePath;
+
+      document.getElementById('editImgPreviewSrc')
+        .src = toDisplayUrl(relativePath);
+
+      document.getElementById('editImgPreview')
+        .style.display = 'block';
+
+      setStatus(
+        'editStatus',
+        'ok',
+        '✅ Image uploaded.'
+      );
+
+    }catch(e){
+
+      setStatus(
+        'editStatus',
+        'err',
+        '❌ ' + e.message
+      );
+
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+}
+
+async function publishMod(){
+
+  const n =
+    parseInt(
+      document.getElementById('f_id').value
+    );
+
+  const t =
+    document.getElementById('f_title')
+    .value
+    .trim();
+
+  const d =
+    document.getElementById('f_desc')
+    .value
+    .trim();
+
+  const i =
+    document.getElementById('f_imageUrl')
+    .value
+    .trim();
+
+  const l =
+    document.getElementById('f_link')
+    .value
+    .trim();
+
+  if(!n || !t || !d || !i || !l){
+
+    setStatus(
+      'publishStatus',
+      'err',
+      '❌ Please complete all required fields.'
+    );
+
+    return;
+  }
+
+  if(mods.some(m=>m.n === n)){
+
+    setStatus(
+      'publishStatus',
+      'err',
+      '❌ This ID is already in use.'
+    );
+
+    return;
+  }
+
+  setStatus(
+    'publishStatus',
+    'info',
+    '⏳ Publishing mod...'
+  );
+
+  mods.push({
+    n,
+    t,
+    d,
+    i,
+    l
+  });
+
+  mods.sort((a,b)=>a.n-b.n);
+
+  try{
+
+    const content =
+      JSON.stringify(mods,null,2);
+
+    const b64 =
+      btoa(
+        unescape(
+          encodeURIComponent(content)
+        )
+      );
+
+    const msg =
+      `Add mod: ${t} (ID: ${n})`;
+
+    const result =
+      await ghPut(
+        cfg.ghPath,
+        b64,
+        msg,
+        currentJsonSha
+      );
+
+    currentJsonSha =
+      result.content.sha;
+
+    renderJson();
+    renderModsList();
+
+    document.getElementById('f_id').value = '';
+    document.getElementById('f_title').value = '';
+    document.getElementById('f_desc').value = '';
+    document.getElementById('f_image').value = '';
+    document.getElementById('f_imageUrl').value = '';
+    document.getElementById('f_link').value = '';
+
+    document.getElementById('imgPreview')
+      .style.display = 'none';
+
+    setStatus(
+      'publishStatus',
+      'ok',
+      `✅ Mod #${n} published successfully.`
+    );
+
+  }catch(e){
+
+    mods =
+      mods.filter(m=>m.n !== n);
+
+    setStatus(
+      'publishStatus',
+      'err',
+      '❌ ' + e.message
+    );
+
+  }
+}
+
+function renderModsList(){
+
+  const q =
+    (
+      document.getElementById('searchInput')
+      .value || ''
+    ).toLowerCase();
+
+  const list =
+    document.getElementById('modsList');
+
+  const filtered =
+    mods.filter(m=>{
+
+      if(!q){
+        return true;
+      }
+
+      return (
+        (m.t || '')
+          .toLowerCase()
+          .includes(q)
+      ) ||
+      String(m.n).includes(q);
+
+    });
+
+  document.getElementById('modsCount')
+    .textContent =
+      `${filtered.length} of ${mods.length}`;
+
+  if(filtered.length === 0){
+
+    list.innerHTML =
+      '<div class="empty"><span class="icon">📭</span>No mods found</div>';
+
+    return;
+  }
+
+  list.innerHTML =
+    filtered
+      .sort((a,b)=>a.n-b.n)
+      .map(m=>`
+
+        <div class="mod-item">
+
+          <img
+            src="${toDisplayUrl(m.i)}"
+            alt=""
+            onerror="this.style.opacity=0.15"
+          >
+
+          <div class="mod-info">
+
+            <div class="title">
+
+              <span class="id-badge">
+                #${m.n}
+              </span>
+
+              ${escapeHtml(
+                m.t || 'Untitled'
+              )}
+
+            </div>
+
+            <div class="meta">
+
+              ${escapeHtml(
+                (m.d || '').slice(0,80)
+              )}
+
+              ${
+                (m.d || '').length > 80
+                  ? '...'
+                  : ''
+              }
+
+            </div>
+
+          </div>
+
+          <div class="mod-actions">
+
+            <button
+              class="btn-secondary"
+              onclick="openEdit(${m.n})"
+            >
+              ✏️ Edit
+            </button>
+
+            <button
+              class="btn-danger"
+              onclick="deleteMod(${m.n})"
+            >
+              🗑️ Delete
+            </button>
+
+          </div>
+
+        </div>
+
+      `)
+      .join('');
+}
+
+function escapeHtml(s){
+
+  return String(s).replace(
+    /[&<>"']/g,
+    c=>({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[c])
+  );
+
+}
+
+function openEdit(n){
+
+  const m =
+    mods.find(x=>x.n === n);
+
+  if(!m){
+    return;
+  }
+
+  currentEditId = n;
+
+  document.getElementById('editIdLabel')
+    .textContent = n;
+
+  document.getElementById('edit_t')
+    .value = m.t || '';
+
+  document.getElementById('edit_d')
+    .value = m.d || '';
+
+  document.getElementById('edit_i')
+    .value = m.i || '';
+
+  document.getElementById('edit_l')
+    .value = m.l || '';
+
+  document.getElementById('edit_n')
+    .value = m.n;
+
+  const prev =
+    document.getElementById('editImgPreview');
+
+  const src =
+    document.getElementById('editImgPreviewSrc');
+
+  if(m.i){
+
+    src.src =
+      toDisplayUrl(m.i);
+
+    prev.style.display =
+      'block';
+
+  }else{
+
+    prev.style.display =
+      'none';
+
+  }
+
+  document.getElementById('editModal')
+    .style.display = 'block';
+
+  document.body.style.overflow =
+    'hidden';
+}
+
+function closeEdit(){
+
+  document.getElementById('editModal')
+    .style.display = 'none';
+
+  document.body.style.overflow =
+    '';
+
+  document.getElementById('editStatus')
+    .className = 'status';
+
+  currentEditId = null;
+}
+
+async function saveEdit(){
+
+  const t =
+    document.getElementById('edit_t')
+    .value
+    .trim();
+
+  const d =
+    document.getElementById('edit_d')
+    .value
+    .trim();
+
+  const i =
+    document.getElementById('edit_i')
+    .value
+    .trim();
+
+  const l =
+    document.getElementById('edit_l')
+    .value
+    .trim();
+
+  const nNew =
+    parseInt(
+      document.getElementById('edit_n').value
+    );
+
+  if(!t || !d || !i || !l || !nNew){
+
+    setStatus(
+      'editStatus',
+      'err',
+      '❌ Please complete all fields.'
+    );
+
+    return;
+  }
+
+  if(
+    nNew !== currentEditId &&
+    mods.some(m=>m.n === nNew)
+  ){
+
+    setStatus(
+      'editStatus',
+      'err',
+      '❌ This ID is already in use.'
+    );
+
+    return;
+  }
+
+  setStatus(
+    'editStatus',
+    'info',
+    '⏳ Saving changes...'
+  );
+
+  const backup =
+    JSON.parse(
+      JSON.stringify(mods)
+    );
+
+  const idx =
+    mods.findIndex(
+      m=>m.n === currentEditId
+    );
+
+  mods[idx] = {
+    n:nNew,
+    t,
+    d,
+    i,
+    l
+  };
+
+  mods.sort(
+    (a,b)=>a.n-b.n
+  );
+
+  try{
+
+    const content =
+      JSON.stringify(
+        mods,
+        null,
+        2
+      );
+
+    const b64 =
+      btoa(
+        unescape(
+          encodeURIComponent(content)
+        )
+      );
+
+    const result =
+      await ghPut(
+        cfg.ghPath,
+        b64,
+        `Edit mod #${currentEditId}`,
+        currentJsonSha
+      );
+
+    currentJsonSha =
+      result.content.sha;
+
+    renderJson();
+    renderModsList();
+
+    setStatus(
+      'editStatus',
+      'ok',
+      '✅ Changes saved.'
+    );
+
+    setTimeout(
+      closeEdit,
+      800
+    );
+
+  }catch(e){
+
+    mods = backup;
+
+    setStatus(
+      'editStatus',
+      'err',
+      '❌ ' + e.message
+    );
+
+  }
+}
+
+async function deleteMod(n){
+
+  const m =
+    mods.find(x=>x.n === n);
+
+  if(!m){
+    return;
+  }
+
+  if(!confirm(
+    `Delete mod #${n}?\n"${m.t}"\n\nThe image will remain on GitHub.`
+  )){
+    return;
+  }
+
+  const backup =
+    JSON.parse(
+      JSON.stringify(mods)
+    );
+
+  mods =
+    mods.filter(
+      x=>x.n !== n
+    );
+
+  try{
+
+    const content =
+      JSON.stringify(
+        mods,
+        null,
+        2
+      );
+
+    const b64 =
+      btoa(
+        unescape(
+          encodeURIComponent(content)
+        )
+      );
+
+    const result =
+      await ghPut(
+        cfg.ghPath,
+        b64,
+        `Delete mod #${n}`,
+        currentJsonSha
+      );
+
+    currentJsonSha =
+      result.content.sha;
+
+    renderJson();
+    renderModsList();
+
+  }catch(e){
+
+    mods = backup;
+
+    alert(
+      'Delete failed: ' + e.message
+    );
+
+  }
+}
+
+function setStatus(
+  id,
+  type,
+  msg
+){
+
+  const el =
+    document.getElementById(id);
+
+  if(!el){
+    return;
+  }
+
+  el.className =
+    'status ' +
+    (type
+      ? 'show ' + type
+      : '');
+
+  el.textContent =
+    msg || '';
+
+  if(type === 'ok'){
+
+    setTimeout(()=>{
+
+      if(el.textContent === msg){
+
+        el.className =
+          'status';
+
+        el.textContent =
+          '';
+
+      }
+
+    },3500);
+
+  }
+}
+
+window.addEventListener(
+  'DOMContentLoaded',
+  ()=>{
+
+    if(loadSettings()){
+
+      loadFromGitHub();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
