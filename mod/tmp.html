@@ -1,0 +1,437 @@
+<!--
+  ============================================================
+  Block Foundry — Mod Page Template (tmp.html)
+  ============================================================
+  This file is NOT viewed directly. It is fetched by
+  /assets/js/mod-renderer.js and injected into #app inside
+  /mod/N.html after placeholder substitution.
+
+  Placeholders used:
+    {{name}}         mod.name
+    {{description}}  mod.description
+    {{thumbnail}}    mod.thumbnail
+    {{category}}     mod.category
+    {{type}}         mod.type
+    {{version}}      mod.version
+    {{mcVersion}}    mod.mcVersion
+    {{downloadUrl}}  mod.downloadUrl
+
+  mod-renderer.js should also update:
+    - document.title
+    - <meta name="description">
+    - og:title / og:image / og:description
+
+  STYLES:
+    Included inline so tmp.html is self-contained. When we build
+    /assets/css/style.css, these rules move there.
+
+  SIDEBAR PAGES:
+    Static sites (GitHub Pages) cannot list a folder from the
+    browser. Update the list below manually when adding a new
+    page under /pages/.
+
+  AD SLOTS:
+    Each slot loads /scripts/N.js inside an isolated iframe
+    (srcdoc) so the ad script cannot leak into the main page.
+  ============================================================
+-->
+
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-2: #1c1c1c;
+    --border: #2a2a2a;
+    --text: #e5e5e5;
+    --text-muted: #9ca3af;
+    --accent: #facc15;
+    --accent-hover: #fde047;
+    --accent-fg: #0a0a0a;
+    --radius: 8px;
+  }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  a { color: inherit; }
+
+  /* ---------- Header ---------- */
+  .bf-header {
+    width: 100%;
+    background: #000;
+    border-bottom: 1px solid var(--border);
+  }
+  .bf-header > a {
+    display: block;
+    max-width: 3000px;
+    margin: 0 auto;
+    line-height: 0;
+  }
+  .bf-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- Layout ---------- */
+  .bf-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .bf-sidebar {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .bf-sidebar-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+  .bf-pages {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .bf-pages a {
+    color: var(--text);
+    text-decoration: none;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .bf-pages a:hover {
+    background: var(--surface-2);
+    color: var(--accent);
+  }
+
+  /* ---------- Main ---------- */
+  .bf-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .bf-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--accent);
+    line-height: 1.2;
+  }
+
+  /* ---------- Ad slot ---------- */
+  .bf-ad {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 66px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .bf-ad iframe {
+    border: 0;
+    display: block;
+    max-width: 100%;
+  }
+
+  /* ---------- Hero image 16:9 ---------- */
+  .bf-hero {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .bf-hero img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---------- Description ---------- */
+  .bf-description {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .bf-description p {
+    margin: 0 0 14px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .bf-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .bf-meta span {
+    font-size: 12px;
+    padding: 4px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+  }
+
+  /* ---------- Video ---------- */
+  .bf-video {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .bf-video-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .bf-video-title svg { flex-shrink: 0; }
+  .bf-video-wrap {
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #000;
+  }
+  .bf-video-wrap video {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---------- Download section ---------- */
+  .bf-download {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .bf-apk-link {
+    align-self: flex-start;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px dashed var(--accent);
+    padding-bottom: 2px;
+    transition: color 0.15s;
+  }
+  .bf-apk-link:hover { color: var(--accent-hover); border-bottom-color: var(--accent-hover); }
+
+  .bf-watch {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface-2);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .bf-watch:hover {
+    background: #222;
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .bf-watch svg { flex-shrink: 0; }
+
+  .bf-download-btn {
+    display: block;
+    text-align: center;
+    background: var(--accent);
+    color: var(--accent-fg);
+    text-decoration: none;
+    padding: 18px 24px;
+    border-radius: var(--radius);
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 24px rgba(250, 204, 21, 0.18);
+    transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  }
+  .bf-download-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(250, 204, 21, 0.28);
+  }
+  .bf-download-btn:active { transform: translateY(0); }
+
+  /* ---------- Footer ---------- */
+  .bf-footer {
+    text-align: center;
+    padding: 24px 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 768px) {
+    .bf-layout {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px 12px 32px;
+    }
+    .bf-sidebar { position: static; }
+    .bf-pages {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .bf-pages a {
+      font-size: 13px;
+      padding: 6px 10px;
+      background: var(--surface-2);
+    }
+    .bf-title { font-size: 22px; }
+    .bf-download-btn { font-size: 16px; padding: 14px 20px; }
+  }
+</style>
+
+<!-- ============ HEADER ============ -->
+<header class="bf-header">
+  <a href="/" aria-label="Block Foundry home">
+    <img src="/header.png" alt="Block Foundry" class="bf-banner" width="3000" height="300">
+  </a>
+</header>
+
+<!-- ============ LAYOUT ============ -->
+<div class="bf-layout">
+
+  <!-- ---------- Sidebar ---------- -->
+  <aside class="bf-sidebar">
+    <h2 class="bf-sidebar-title">Pages</h2>
+    <nav class="bf-pages" aria-label="Site pages">
+      <!-- Update this list when adding new pages under /pages/ -->
+      <a href="/pages/about-us.html">About Us</a>
+      <a href="/pages/contact.html">Contact</a>
+      <a href="/pages/feedback.html">Feedback</a>
+      <a href="/pages/privacy-policy.html">Privacy Policy</a>
+      <a href="/pages/terms-of-use.html">Terms of Use</a>
+    </nav>
+  </aside>
+
+  <!-- ---------- Main ---------- -->
+  <main class="bf-main">
+
+    <h1 class="bf-title">{{name}}</h1>
+
+    <!-- Ad slot 1 (320×50) -->
+    <div class="bf-ad">
+      <iframe width="320" height="50" frameborder="0" scrolling="no" title="Advertisement"
+        srcdoc="<!doctype html><html><head><style>html,body{margin:0;height:100%;background:#141414;font-family:system-ui,sans-serif;font-size:11px;display:flex;align-items:center;justify-content:center;}</style></head><body><script src='/scripts/1.js'></script></body></html>">
+      </iframe>
+    </div>
+
+    <!-- Hero image 16:9 -->
+    <div class="bf-hero">
+      <img src="{{thumbnail}}" alt="{{name}}">
+    </div>
+
+    <!-- Ad slot 2 (320×50) -->
+    <div class="bf-ad">
+      <iframe width="320" height="50" frameborder="0" scrolling="no" title="Advertisement"
+        srcdoc="<!doctype html><html><head><style>html,body{margin:0;height:100%;background:#141414;font-family:system-ui,sans-serif;font-size:11px;display:flex;align-items:center;justify-content:center;}</style></head><body><script src='/scripts/2.js'></script></body></html>">
+      </iframe>
+    </div>
+
+    <!-- Description -->
+    <section class="bf-description">
+      <p>{{description}}</p>
+      <div class="bf-meta">
+        <span>{{category}}</span>
+        <span>{{type}}</span>
+        <span>v{{version}}</span>
+        <span>MC {{mcVersion}}</span>
+      </div>
+    </section>
+
+    <!-- Video player -->
+    <section class="bf-video">
+      <h2 class="bf-video-title">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M8 5v14l11-7z"/>
+        </svg>
+        How to Skip Ads
+      </h2>
+      <div class="bf-video-wrap">
+        <video controls preload="metadata" playsinline
+          poster="/content/images/video-poster.jpg">
+          <source src="/content/videos/how-to-skip-ads.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </section>
+
+    <!-- Ad slot 3 (320×50) -->
+    <div class="bf-ad">
+      <iframe width="320" height="50" frameborder="0" scrolling="no" title="Advertisement"
+        srcdoc="<!doctype html><html><head><style>html,body{margin:0;height:100%;background:#141414;font-family:system-ui,sans-serif;font-size:11px;display:flex;align-items:center;justify-content:center;}</style></head><body><script src='/scripts/3.js'></script></body></html>">
+      </iframe>
+    </div>
+
+    <!-- Download section -->
+    <section class="bf-download">
+
+      <a class="bf-apk-link"
+         href="https://link.attdes.online/Minecraftblockfoundry"
+         target="_blank" rel="noopener">
+        Download latest APK Minecraft
+      </a>
+
+      <a class="bf-watch" href="/how-to-install.html?type={{type}}">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/>
+        </svg>
+        Watch How to Install the mod
+      </a>
+
+      <a class="bf-download-btn" href="{{downloadUrl}}" rel="noopener">
+        Download
+      </a>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="bf-footer">
+  All rights Reserved ATTDES © 2026
+</footer>
