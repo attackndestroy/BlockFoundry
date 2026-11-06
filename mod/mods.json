@@ -1,0 +1,19 @@
+{
+  "mods": [
+    {
+      "id": 0,
+      "name": "Glowing Netherite Addon",
+      "description": "A glowing Netherite-themed addon for Minecraft Bedrock. Adds new glowing armor variants, emissive tools, and a light-emitting sword. Works on survival and creative mode. Fully compatible with vanilla textures and most popular addons.",
+      "category": "addon",
+      "type": "mcaddon",
+      "version": "1.2.0",
+      "mcVersion": "1.21.x",
+      "downloadUrl": "https://link.attdes.online/test-download",
+      "thumbnail": "/content/images/mods/0/icon.png",
+      "screenshots": [
+        "/content/images/mods/0/1.jpg",
+        "/content/images/mods/0/2.jpg"
+      ]
+    }
+  ]
+}
