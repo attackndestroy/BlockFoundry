@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loading mod… — BlockFoundry</title>
+  <meta name="robots" content="index,follow">
+  <style>
+    html,body{margin:0;min-height:100%;background:#0b0f0d;color:#f2f6f3;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+    .bf-loader{display:grid;place-items:center;min-height:100vh;padding:24px}
+    .bf-loader__box{max-width:480px;width:100%;text-align:center}
+    .bf-loader__spinner{width:36px;height:36px;margin:0 auto 18px;border:3px solid rgba(82,196,26,.18);border-top-color:#52c41a;border-radius:50%;animation:bfspin .8s linear infinite}
+    .bf-loader__title{font-size:1rem;font-weight:600;margin:0 0 8px}
+    .bf-loader__msg{margin:0;color:#95a89d;font-size:.9rem;line-height:1.55}
+    .bf-loader__link{display:inline-block;margin-top:20px;color:#52c41a;text-decoration:none;font-weight:700;font-size:.9rem}
+    .bf-loader__link:hover{text-decoration:underline}
+    @keyframes bfspin{to{transform:rotate(360deg)}}
+    @media (prefers-reduced-motion: reduce){.bf-loader__spinner{animation:none;border-top-color:rgba(82,196,26,.6)}}
+  </style>
+</head>
+<body>
+  <main id="bf-root" class="bf-loader" role="status" aria-live="polite">
+    <div class="bf-loader__box">
+      <div class="bf-loader__spinner" aria-hidden="true"></div>
+      <p class="bf-loader__title">Loading mod…</p>
+      <p class="bf-loader__msg">Fetching the database and template.</p>
+    </div>
+  </main>
+
+  <noscript>
+    <div class="bf-loader">
+      <div class="bf-loader__box">
+        <p class="bf-loader__title">JavaScript is required</p>
+        <p class="bf-loader__msg">Please enable JavaScript to view this mod page.</p>
+        <a class="bf-loader__link" href="https://blockfoundry.attdes.online/">← Back to BlockFoundry</a>
+      </div>
+    </div>
+  </noscript>
+
+  <script>
+  (() => {
+    "use strict";
+
+    /* =========================================================
+       BlockFoundry — Numbered Mod Page Loader
+       =========================================================
+       This file is IDENTICAL for every numbered page:
+         /mod/1.html, /mod/2.html, …, /mod/999.html, …
+       The page ID is derived from the URL filename at runtime.
+       ========================================================= */
+
+    const CONFIG = Object.freeze({
+      dataUrl: "https://blockfoundry.attdes.online/mod/data.json",
+      templateUrl: "https://blockfoundry.attdes.online/mod/tmp.html",
+      thumbBase: "https://blockfoundry.attdes.online/mod/",
+      origin: "https://blockfoundry.attdes.online",
+      timeoutMs: 12000
+    });
+
+    const PLACEHOLDER =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">' +
+          '<rect width="640" height="360" fill="#111814"/>' +
+          '<text x="320" y="192" text-anchor="middle" ' +
+            'font-family="system-ui,sans-serif" font-size="32" ' +
+            'font-weight="700" fill="#52c41a" fill-opacity=".85">' +
+            'BLOCKFOUNDRY</text>' +
+        '</svg>'
+      );
+
+    const root = document.getElementById("bf-root");
+
+    /* -------------------- Helpers -------------------- */
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[c]));
+    }
+
+    function safeUrl(value, base) {
+      if (value == null) return "";
+      const raw = String(value).trim();
+      if (!raw) return "";
+      try {
+        const url = new URL(raw, base);
+        if (url.protocol === "http:" || url.protocol === "https:") return url.href;
+      } catch (error) { /* invalid */ }
+      return "";
+    }
+
+    async function fetchText(url, accept) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), CONFIG.timeoutMs);
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          cache: "no-store",
+          credentials: "omit",
+          headers: accept ? { Accept: accept } : undefined
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+        return await response.text();
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    /* -------------------- ID detection -------------------- */
+    function detectPageId() {
+      try {
+        const filename = (window.location.pathname.split("/").pop() || "").trim();
+        const match = filename.match(/^(\d+)\.html?$/i);
+        if (!match) return null;
+        const id = Number(match[1]);
+        return Number.isInteger(id) && id > 0 ? id : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    /* -------------------- Database lookup -------------------- */
+    function findMod(json, id) {
+      let list = json;
+      if (!Array.isArray(list)) {
+        if (Array.isArray(json?.mods)) list = json.mods;
+        else if (Array.isArray(json?.data)) list = json.data;
+        else if (json && typeof json === "object") list = Object.values(json);
+        else return null;
+      }
+      for (const item of list) {
+        if (item && typeof item === "object" && Number(item.n) === id) return item;
+      }
+      return null;
+    }
+
+    function normalizeMod(raw) {
+      const cats = Array.isArray(raw.c)
+        ? raw.c.map((c) => String(c).trim()).filter(Boolean)
+        : typeof raw.c === "string"
+          ? raw.c.split(",").map((c) => c.trim()).filter(Boolean)
+          : [];
+
+      return {
+        n: Number(raw.n),
+        t: String(raw.t ?? "").trim(),
+        d: String(raw.d ?? "").trim(),
+        c: [...new Set(cats)],
+        p: safeUrl(raw.p, CONFIG.thumbBase),
+        l: safeUrl(raw.l, CONFIG.origin),
+        v: String(raw.v ?? "").trim()
+      };
+    }
+
+    /* -------------------- Template substitution -------------------- */
+    function renderTemplate(templateHtml, mod) {
+      const fields = {
+        t: escapeHtml(mod.t || `Mod ${mod.n}`),
+        d: escapeHtml(mod.d || ""),
+        n: String(mod.n),
+        c: mod.c.map((c) => escapeHtml(c)).join(", "),
+        p: escapeHtml(mod.p || PLACEHOLDER),
+        l: escapeHtml(mod.l || ""),
+        v: escapeHtml(mod.v || "")
+      };
+
+      /* Single-pass replacement prevents cross-contamination when a
+         substituted value happens to look like another token. */
+      return templateHtml.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (match, key) =>
+        Object.prototype.hasOwnProperty.call(fields, key) ? fields[key] : match
+      );
+    }
+
+    /* -------------------- Error view -------------------- */
+    function showError(title, message) {
+      document.title = `${title} — BlockFoundry`;
+      if (!root) return;
+      root.className = "bf-loader";
+      root.innerHTML = `
+        <div class="bf-loader__box">
+          <p class="bf-loader__title">${escapeHtml(title)}</p>
+          <p class="bf-loader__msg">${escapeHtml(message)}</p>
+          <a class="bf-loader__link" href="${CONFIG.origin}/">← Back to BlockFoundry</a>
+        </div>
+      `;
+    }
+
+    /* -------------------- Bootstrap -------------------- */
+    async function boot() {
+      const id = detectPageId();
+      if (!id) {
+        showError("Invalid mod page", "This page's filename could not be read as a mod ID.");
+        return;
+      }
+
+      let templateHtml;
+      try {
+        templateHtml = await fetchText(CONFIG.templateUrl, "text/html");
+      } catch (error) {
+        showError("Couldn’t load the page template", "The mod template is unavailable. Please try again later.");
+        return;
+      }
+      if (!templateHtml || !templateHtml.trim()) {
+        showError("Empty template", "The mod template returned no content.");
+        return;
+      }
+
+      let dataJson;
+      try {
+        const text = await fetchText(CONFIG.dataUrl, "application/json");
+        try {
+          dataJson = JSON.parse(text);
+        } catch (parseError) {
+          showError("Database error", "The mod database returned invalid JSON.");
+          return;
+        }
+      } catch (error) {
+        showError("Couldn’t reach the mod database", "The database service is currently unavailable.");
+        return;
+      }
+
+      const raw = findMod(dataJson, id);
+      if (!raw) {
+        showError("Mod not found", `No mod with ID ${id} exists in the database.`);
+        return;
+      }
+
+      const mod = normalizeMod(raw);
+      const html = renderTemplate(templateHtml, mod);
+
+      /* Replace the lightweight loader with the rendered template.
+         The template is our own trusted file; mod data has been
+         HTML-escaped / URL-validated above. */
+      document.open();
+      document.write(html);
+      document.close();
+    }
+
+    boot().catch(() => {
+      showError("Unexpected error", "Something went wrong while loading this mod page.");
+    });
+  })();
+  </script>
+</body>
+</html>
