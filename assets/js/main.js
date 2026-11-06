@@ -9,14 +9,6 @@
      - Each card links to /mod/{id}.html
      - Show empty state if mods.json has zero mods
      - Show error state if fetch fails
-
-   ORDER:
-     mods.json is displayed in ARRAY ORDER. To feature a mod
-     first, place it first in mods.json.
-
-   SECURITY:
-     All text fields are HTML-escaped. All URLs are validated
-     to only allow http(s) before being set as src/href.
    ============================================================ */
 
 (function () {
@@ -51,7 +43,9 @@
 
   function renderCard(mod) {
     var id     = Number(mod && mod.id);
-    if (!isFinite(id) || id <= 0) return '';
+    
+    // ALLOWS ID 0 BUT BLOCKS NEGATIVE IDS
+    if (!isFinite(id) || id < 0) return '';
 
     var name   = escapeHTML(mod.name || 'Untitled Mod');
     var desc   = escapeHTML(mod.description || '');
