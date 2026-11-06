@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0f0d">
+  <title>BlockFoundry — Minecraft Bedrock Mods</title>
+  <meta name="description" content="Discover, browse and download the latest Minecraft Bedrock mods from BlockFoundry.">
+  <link rel="canonical" href="https://blockfoundry.attdes.online/">
+  <meta property="og:title" content="BlockFoundry — Minecraft Bedrock Mods">
+  <meta property="og:description" content="Discover, browse and download the latest Minecraft Bedrock mods.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blockfoundry.attdes.online/">
+  <meta property="og:image" content="https://blockfoundry.attdes.online/archive/head.png">
+
+  <style>
+    /* =========================================================
+       Design tokens
+       ========================================================= */
+    :root {
+      --bg: #0b0f0d;
+      --surface: #111814;
+      --surface-2: #151f1a;
+      --surface-3: #1b2821;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.16);
+      --text: #f2f6f3;
+      --muted: #95a89d;
+      --muted-2: #6f8176;
+      --green: #52c41a;
+      --green-strong: #6ee73a;
+      --green-dim: rgba(82, 196, 26, 0.12);
+      --green-line: rgba(82, 196, 26, 0.35);
+      --radius: 14px;
+      --radius-lg: 18px;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      --container: 1180px;
+      --header-h: clamp(230px, 36vw, 430px);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 520px at 85% -10%, rgba(82, 196, 26, 0.09), transparent 65%),
+        radial-gradient(650px 420px at 0% 35%, rgba(82, 196, 26, 0.04), transparent 60%);
+    }
+
+    body.is-locked { overflow: hidden; }
+
+    img { max-width: 100%; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    [hidden] { display: none !important; }
+
+    :focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--container));
+      margin-inline: auto;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 200;
+      transform: translateY(-160%);
+      background: var(--green);
+      color: #071006;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      transition: transform 0.2s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* =========================================================
+       Header
+       ========================================================= */
+    .site-header {
+      position: relative;
+      height: var(--header-h);
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f1813, #1a2a20);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .header-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      z-index: 0;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+    .header-image.is-hidden { opacity: 0; }
+
+    .header-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(5, 9, 7, 0.78), rgba(5, 9, 7, 0.1) 48%, rgba(11, 15, 13, 0.94));
+    }
+
+    .header-bar {
+      position: absolute;
+      inset: 0 0 auto 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px max(20px, calc((100% - var(--container)) / 2));
+    }
+
+    .header-wordmark {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+      margin-right: auto;
+    }
+    .header-wordmark::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 9px;
+      background: var(--green);
+      box-shadow: 9px 0 0 rgba(82, 196, 26, 0.3);
+      vertical-align: 1px;
+    }
+
+    .icon-button {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      background: rgba(7, 12, 9, 0.55);
+      color: #fff;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+    .icon-button:hover {
+      background: var(--green);
+      border-color: var(--green);
+      color: #071006;
+      transform: translateY(-1px);
+    }
+    .icon-button svg { width: 22px; height: 22px; }
+
+    /* =========================================================
+       Hero / intro
+       ========================================================= */
+    .hero-intro {
+      position: relative;
+      padding: clamp(44px, 6vw, 76px) 0 clamp(28px, 4vw, 44px);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+      gap: clamp(28px, 5vw, 64px);
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 12px;
+      color: var(--green-strong);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px rgba(82, 196, 26, 0.12);
+    }
+
+    .hero-intro h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.3rem, 6vw, 4.4rem);
+      font-weight: 800;
+      line-height: 0.98;
+      letter-spacing: -0.045em;
+    }
+    .hero-intro h1 span { color: var(--green); }
+
+    .hero-copy {
+      max-width: 620px;
+      margin: 0 0 26px;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.5vw, 1.1rem);
+      line-height: 1.65;
+    }
+
+    .hero-search {
+      display: flex;
+      gap: 10px;
+      max-width: 620px;
+    }
+
+    .hero-search input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      padding: 13px 16px;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .hero-search input::placeholder { color: #7e8f85; }
+    .hero-search input:focus {
+      border-color: var(--green);
+      background: var(--surface-2);
+      box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.13);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      background: var(--green);
+      color: #071006;
+      padding: 11px 18px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
+    }
+    .button:hover {
+      background: var(--green-strong);
+      border-color: var(--green-strong);
+      transform: translateY(-1px);
+    }
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button-ghost {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--line-strong);
+    }
+    .button-ghost:hover {
+      background: var(--surface-2);
+      border-color: var(--green-line);
+      color: #fff;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
+    }
+
+    .hero-stat { min-width: 0; }
+    .hero-stat + .hero-stat {
+      border-left: 1px solid var(--line);
+      padding-left: clamp(12px, 2vw, 22px);
+    }
+    .hero-stat strong {
+      display: block;
+      color: #fff;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+    }
+    .hero-stat span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       Sections
+       ========================================================= */
+    .section { padding: clamp(32px, 5vw, 52px) 0; }
+    .mods-section { scroll-margin-top: 24px; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .section .eyebrow { margin-bottom: 8px; }
+
+    .muted { color: var(--muted); }
+
+    .text-btn {
+      border: 0;
+      background: none;
+      padding: 6px 0;
+      color: var(--green-strong);
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+    .text-btn:hover { text-decoration: underline; }
+
+    .count-badge {
+      flex: 0 0 auto;
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    /* =========================================================
+       Category chips
+       ========================================================= */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: #c9d6ce;
+      padding: 9px 15px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .chip:hover {
+      border-color: var(--green-line);
+      background: var(--surface-2);
+      color: #fff;
+    }
+    .chip.is-active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #071006;
+      font-weight: 800;
+    }
+    .chip.is-active:hover {
+      background: var(--green-strong);
+      border-color: var(--green-strong);
+    }
+
+    .chip-count {
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .chip.is-active .chip-count {
+      background: rgba(0, 0, 0, 0.15);
+      color: #071006;
+    }
+
+    /* =========================================================
+       Mod cards
+       ========================================================= */
+    .mod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .mod-card {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--surface-2), var(--surface));
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .mod-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--green-line);
+      box-shadow: var(--shadow);
+    }
+
+    .mod-thumb {
+      position: relative;
+      display: block;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #0a0e0c;
+    }
+    .mod-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .mod-card:hover .mod-thumb img { transform: scale(1.035); }
+
+    .mod-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.45));
+    }
+
+    .mod-version {
+      position: absolute;
+      z-index: 1;
+      top: 10px;
+      left: 10px;
+      padding: 4px 8px;
+      border: 1px solid rgba(82, 196, 26, 0.45);
+      border-radius: 6px;
+      background: rgba(5, 10, 7, 0.78);
+      color: var(--green-strong);
+      font-size: 0.72rem;
+      font-weight: 800;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .mod-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-width: 0;
+      padding: 16px;
+    }
+
+    .mod-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 24px;
+      margin-bottom: 9px;
+    }
+
+    .tag {
+      border: 1px solid rgba(82, 196, 26, 0.22);
+      border-radius: 4px;
+      background: var(--green-dim);
+      color: #a9d7b0;
+      padding: 3px 7px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .tag:hover {
+      border-color: var(--green-line);
+      background: rgba(82, 196, 26, 0.2);
+      color: #d8ffd0;
+    }
+
+    .mod-body h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+    .mod-body h3 a:hover { color: var(--green-strong); }
+
+    .mod-desc {
+      display: -webkit-box;
+      min-height: 2.8em;
+      margin: 0 0 16px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .mod-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .mod-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--green-strong);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .mod-link svg { transition: transform 0.18s ease; }
+    .mod-link:hover svg { transform: translateX(2px); }
+
+    .download-link {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--surface-3);
+      color: #bcd0c4;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .download-link:hover {
+      border-color: var(--green);
+      background: var(--green);
+      color: #071006;
+    }
+    .download-link svg { width: 17px; height: 17px; }
+
+    /* =========================================================
+       Loading / empty / error states
+       ========================================================= */
+    .state-card {
+      grid-column: 1 / -1;
+      padding: 56px 24px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.015);
+      text-align: center;
+    }
+
+    .state-icon {
+      display: grid;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 14px;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green-dim);
+      color: var(--green-strong);
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .state-card h3 {
+      margin: 0 0 6px;
+      font-size: 1.15rem;
+    }
+
+    .state-card p {
+      max-width: 440px;
+      margin: 0 auto 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .skeleton-card:hover {
+      transform: none;
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .skeleton-thumb {
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    .skeleton-body { padding: 16px; }
+
+    .skeleton-line {
+      height: 10px;
+      margin-bottom: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skeleton-line.short { width: 38%; }
+    .skeleton-line.medium { width: 66%; }
+    .skeleton-line:last-child { margin-bottom: 0; }
+
+    @keyframes shimmer {
+      to { background-position: -200% 0; }
+    }
+
+    .load-more-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    /* =========================================================
+       Footer
+       ========================================================= */
+    .site-footer {
+      margin-top: 20px;
+      padding: 32px 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .footer-brand {
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-note {
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    /* =========================================================
+       Sidebar
+       ========================================================= */
+    .scrim {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(0, 0, 0, 0.62);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .scrim.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .sidebar {
+      position: fixed;
+      z-index: 90;
+      inset: 0 auto 0 0;
+      display: flex;
+      width: min(88vw, 340px);
+      flex-direction: column;
+      visibility: hidden;
+      border-right: 1px solid var(--line-strong);
+      background: linear-gradient(180deg, #0f1713, #0b100d);
+      box-shadow: 30px 0 60px rgba(0, 0, 0, 0.35);
+      transform: translateX(-102%);
+      transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.28s;
+    }
+    .sidebar.is-open {
+      visibility: visible;
+      transform: translateX(0);
+      transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0s;
+    }
+
+    .sidebar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .sidebar-head span {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .close-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 1.2rem;
+      line-height: 1;
+      transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .close-button:hover {
+      border-color: var(--green-line);
+      background: var(--surface-2);
+      color: #fff;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 12px;
+    }
+
+    .side-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #d5e2d9;
+      font-size: 0.94rem;
+      font-weight: 600;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .side-link:hover,
+    .side-link:focus-visible {
+      background: var(--surface-2);
+      color: #fff;
+    }
+    .side-link svg {
+      flex-shrink: 0;
+      color: var(--muted);
+      transition: color 0.18s ease;
+    }
+    .side-link:hover svg { color: var(--green-strong); }
+
+    .side-arrow {
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+    }
+
+    .side-group { margin-top: 8px; }
+
+    .side-group-title {
+      margin: 0;
+      padding: 14px 14px 6px;
+      color: #708077;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .menu-status {
+      margin: 0;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    .menu-retry {
+      width: calc(100% - 28px);
+      margin: 10px 14px 0;
+      padding: 9px 12px;
+      font-size: 0.82rem;
+    }
+
+    .sidebar-foot {
+      padding: 18px 20px;
+      border-top: 1px solid var(--line);
+      color: #728078;
+      font-size: 0.78rem;
+      line-height: 1.55;
+    }
+    .sidebar-foot strong { color: #b9c9bf; }
+
+    /* =========================================================
+       Search overlay
+       ========================================================= */
+    .search-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: max(24px, 8vh) 16px 24px;
+      visibility: hidden;
+      background: rgba(5, 8, 6, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+    .search-overlay.is-open {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transition: opacity 0.2s ease, visibility 0s linear 0s;
+    }
+
+    .search-panel {
+      width: min(100%, 720px);
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-lg);
+      background: #0e1511;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+      transform: translateY(-8px);
+      transition: transform 0.22s ease;
+    }
+    .search-overlay.is-open .search-panel { transform: translateY(0); }
+
+    .search-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px 0;
+    }
+    .search-head h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .search-form { padding: 14px 20px 0; }
+
+    .search-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--surface);
+      padding: 0 14px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .search-field:focus-within {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.12);
+    }
+    .search-field > svg {
+      flex-shrink: 0;
+      color: var(--green-strong);
+    }
+    .search-field input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 15px 0;
+      font-size: 1rem;
+    }
+    .search-field input::placeholder { color: #7e8f85; }
+
+    .search-field kbd {
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: var(--surface-3);
+      color: var(--muted);
+      padding: 2px 6px;
+      font-family: inherit;
+      font-size: 0.68rem;
+    }
+
+    .search-meta {
+      min-height: 22px;
+      padding: 12px 20px 0;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .search-results {
+      max-height: min(46vh, 360px);
+      overflow-y: auto;
+      padding: 8px 10px;
+    }
+
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      transition: background 0.18s ease;
+    }
+    .search-result:hover { background: var(--surface-2); }
+
+    .search-result img {
+      width: 80px;
+      aspect-ratio: 16 / 9;
+      flex: 0 0 80px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #0a0e0c;
+    }
+
+    .search-result div { min-width: 0; }
+    .search-result strong {
+      display: block;
+      overflow: hidden;
+      color: #fff;
+      font-size: 0.9rem;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .search-result span {
+      display: block;
+      overflow: hidden;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .search-empty {
+      margin: 0;
+      padding: 18px 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .search-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 20px 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .hero-stats { max-width: 540px; }
+    }
+
+    @media (max-width: 640px) {
+      .container { width: min(calc(100% - 32px), var(--container)); }
+      .header-bar { padding: 12px 16px; gap: 10px; }
+      .icon-button { width: 42px; height: 42px; flex-basis: 42px; }
+      .icon-button svg { width: 20px; height: 20px; }
+      .header-wordmark { font-size: 0.95rem; }
+
+      .hero-search { flex-direction: column; }
+      .hero-search .button { width: 100%; }
+
+      .chip-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 6px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .chip-row::-webkit-scrollbar { display: none; }
+      .chip { flex: 0 0 auto; }
+
+      .mod-grid { gap: 16px; }
+
+      .section-head { align-items: start; }
+      .count-badge { align-self: center; }
+
+      .search-overlay {
+        align-items: flex-start;
+        padding: 12px;
+      }
+      .search-panel { border-radius: 16px; }
+      .search-head { padding: 16px 16px 0; }
+      .search-form { padding: 12px 16px 0; }
+      .search-meta { padding: 10px 16px 0; }
+      .search-results { max-height: 42vh; }
+      .search-actions { padding: 12px 16px 16px; }
+      .search-field kbd { display: none; }
+
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 420px) {
+      .hero-stat strong { font-size: 1.25rem; }
+      .hero-stat span { font-size: 0.62rem; letter-spacing: 0.1em; }
+      .mod-body { padding: 14px; }
+    }
+
+    @media (max-height: 600px) {
+      .search-results { max-height: 30vh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" aria-label="BlockFoundry header">
+    <img
+      class="header-image"
+      id="headerImage"
+      src="https://blockfoundry.attdes.online/archive/head.png"
+      alt="BlockFoundry — Minecraft Bedrock mods"
+      fetchpriority="high"
+      decoding="async"
+    >
+    <div class="header-shade" aria-hidden="true"></div>
+
+    <div class="header-bar">
+      <button
+        class="icon-button"
+        id="menuToggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="sidebar"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+
+      <span class="header-wordmark">BlockFoundry</span>
+
+      <button
+        class="icon-button"
+        id="searchToggle"
+        type="button"
+        aria-label="Search mods"
+        aria-controls="searchOverlay"
+        aria-expanded="false"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20 20-3.6-3.6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Intro -->
+    <section class="hero-intro">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Minecraft Bedrock Mods</p>
+          <h1>Build beyond <span>vanilla.</span></h1>
+          <p class="hero-copy">
+            BlockFoundry is a curated forge of Minecraft Bedrock mods. Browse new worlds,
+            gameplay overhauls, tools and building packs — then jump straight into the mod page.
+          </p>
+
+          <form class="hero-search" id="heroSearchForm" role="search">
+            <input
+              id="heroSearchInput"
+              type="search"
+              name="q"
+              placeholder="Search mods, categories, tags…"
+              aria-label="Search mods"
+              autocomplete="off"
+              enterkeyhint="search"
+            >
+            <button class="button" type="submit">Search</button>
+          </form>
+        </div>
+
+        <aside class="hero-stats" aria-label="Database stats">
+          <div class="hero-stat">
+            <strong id="statMods">—</strong>
+            <span>Mods</span>
+          </div>
+          <div class="hero-stat">
+            <strong id="statCats">—</strong>
+            <span>Categories</span>
+          </div>
+          <div class="hero-stat">
+            <strong id="statLatest">—</strong>
+            <span>Newest</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="section categories-section" aria-labelledby="categoriesHeading">
+      <div class="container section-head">
+        <div>
+          <p class="eyebrow">Explore</p>
+          <h2 id="categoriesHeading">Browse by category</h2>
+        </div>
+        <button class="text-btn" id="clearFilters" type="button" hidden>Clear filters</button>
+      </div>
+      <div class="container">
+        <div class="chip-row" id="categoryChips" role="group" aria-label="Filter mods by category">
+          <button class="chip is-active" type="button" data-category="all" aria-pressed="true">
+            <span>All mods</span>
+            <span class="chip-count">0</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Latest mods -->
+    <section class="section mods-section" id="mods" aria-labelledby="modsHeading">
+      <div class="container section-head">
+        <div>
+          <p class="eyebrow">The forge</p>
+          <h2 id="modsHeading">Latest mods</h2>
+          <p class="muted" id="resultSummary" aria-live="polite">Loading the mod database…</p>
+        </div>
+        <span class="count-badge" id="countBadge">—</span>
+      </div>
+
+      <div class="container">
+        <div class="mod-grid" id="modGrid" aria-busy="true"></div>
+
+        <div class="load-more-wrap" id="loadMoreWrap" hidden>
+          <button class="button button-ghost" id="loadMoreBtn" type="button">Load more mods</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="footer-brand">BlockFoundry</div>
+        <div>Minecraft Bedrock mods, forged in one place.</div>
+      </div>
+      <div class="footer-note">
+        © <span id="year"></span> BlockFoundry. Not affiliated with Mojang Studios or Microsoft.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sidebar navigation -->
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+  <aside
+    class="sidebar"
+    id="sidebar"
+    aria-label="Site navigation"
+    aria-hidden="true"
+    inert
+  >
+    <div class="sidebar-head">
+      <span>Navigation</span>
+      <button class="close-button" id="sidebarClose" type="button" aria-label="Close navigation menu">×</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/" class="side-link" aria-current="page">
+        <span>Home</span>
+        <span class="side-arrow" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </span>
+      </a>
+
+      <div id="dynamicMenu" class="side-group">
+        <p class="menu-status">Discovering pages…</p>
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <strong>BlockFoundry</strong><br>
+      Dynamic navigation is built from the pages available inside <code>/menu/</code>.
+    </div>
+  </aside>
+
+  <!-- Integrated search -->
+  <div class="search-overlay" id="searchOverlay" aria-hidden="true" inert>
+    <div class="search-panel" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+      <div class="search-head">
+        <h2 id="searchTitle">Search the forge</h2>
+        <button class="close-button" id="searchClose" type="button" aria-label="Close search">×</button>
+      </div>
+
+      <form class="search-form" id="searchForm" role="search">
+        <div class="search-field">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m20 20-3.6-3.6"/>
+          </svg>
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Search titles, descriptions, categories, tags…"
+            aria-label="Search mods"
+            autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="search"
+          >
+          <kbd>Enter</kbd>
+        </div>
+      </form>
+
+      <div class="search-meta" id="searchMeta" aria-live="polite">Preparing the mod database…</div>
+      <div class="search-results" id="searchResults"></div>
+
+      <div class="search-actions">
+        <button class="button" id="showAllResults" type="button" disabled>Show all results</button>
+      </div>
+    </div>
+  </div>
+
+  <noscript>
+    <div style="padding:24px;text-align:center;color:#95a89d;border-top:1px solid rgba(255,255,255,.09);">
+      JavaScript is required to load the live mod database and navigation.
+    </div>
+  </noscript>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /* =======================================================
+         Configuration
+         ======================================================= */
+      const ORIGIN = "https://blockfoundry.attdes.online";
+
+      const CONFIG = {
+        dataUrl: `${ORIGIN}/mod/data.json`,
+        thumbBase: `${ORIGIN}/mod/`,
+        pageSize: 9,
+        menuCandidates: [
+          `${ORIGIN}/menu/manifest.json`,
+          `${ORIGIN}/menu/pages.json`,
+          `${ORIGIN}/menu/menu.json`,
+          `${ORIGIN}/menu/manifest.txt`
+        ]
+      };
+
+      const PLACEHOLDER = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">' +
+          '<rect width="640" height="360" fill="#111814"/>' +
+          '<g fill="none" stroke="#52c41a" stroke-opacity=".22">' +
+            '<path d="M0 90h640M0 180h640M0 270h640M160 0v360M320 0v360M480 0v360"/>' +
+          '</g>' +
+          '<text x="320" y="192" text-anchor="middle" font-family="system-ui,sans-serif" font-size="36" font-weight="700" fill="#52c41a" fill-opacity=".8">BLOCKFOUNDRY</text>' +
+        '</svg>'
+      );
+
+      const ARROW_ICON =
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          '<path d="M5 12h14M13 6l6 6-6 6"/>' +
+        '</svg>';
+
+      const DOWNLOAD_ICON =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          '<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>' +
+        '</svg>';
+
+      /* =======================================================
+         DOM
+         ======================================================= */
+      const dom = {
+        headerImage: document.getElementById("headerImage"),
+        menuToggle: document.getElementById("menuToggle"),
+        searchToggle: document.getElementById("searchToggle"),
+        sidebar: document.getElementById("sidebar"),
+        sidebarClose: document.getElementById("sidebarClose"),
+        scrim: document.getElementById("scrim"),
+        dynamicMenu: document.getElementById("dynamicMenu"),
+
+        searchOverlay: document.getElementById("searchOverlay"),
+        searchClose: document.getElementById("searchClose"),
+        searchForm: document.getElementById("searchForm"),
+        searchInput: document.getElementById("searchInput"),
+        searchMeta: document.getElementById("searchMeta"),
+        searchResults: document.getElementById("searchResults"),
+        showAllResults: document.getElementById("showAllResults"),
+
+        heroSearchForm: document.getElementById("heroSearchForm"),
+        heroSearchInput: document.getElementById("heroSearchInput"),
+
+        statMods: document.getElementById("statMods"),
+        statCats: document.getElementById("statCats"),
+        statLatest: document.getElementById("statLatest"),
+
+        categoryChips: document.getElementById("categoryChips"),
+        clearFilters: document.getElementById("clearFilters"),
+        modsHeading: document.getElementById("modsHeading"),
+        resultSummary: document.getElementById("resultSummary"),
+        countBadge: document.getElementById("countBadge"),
+        modGrid: document.getElementById("modGrid"),
+        loadMoreWrap: document.getElementById("loadMoreWrap"),
+        loadMoreBtn: document.getElementById("loadMoreBtn"),
+        year: document.getElementById("year")
+      };
+
+      /* =======================================================
+         State
+         ======================================================= */
+      const state = {
+        status: "loading", // loading | ready | error
+        mods: [],
+        categories: [],
+        filtered: [],
+        query: "",
+        category: "all",
+        visible: CONFIG.pageSize,
+        rendered: 0
+      };
+
+      let lastSidebarFocus = null;
+      let lastSearchFocus = null;
+
+      /* =======================================================
+         Helpers
+         ======================================================= */
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        }[character]));
+      }
+
+      function safeUrl(value, base = `${ORIGIN}/`) {
+        if (value == null) return "";
+        const raw = String(value).trim();
+        if (!raw) return "";
+
+        try {
+          const url = new URL(raw, base);
+          if (url.protocol === "http:" || url.protocol === "https:") {
+            return url.href;
+          }
+        } catch (error) {
+          /* Invalid URL — fall through. */
+        }
+        return "";
+      }
+
+      function resolveThumb(value) {
+        return safeUrl(value, CONFIG.thumbBase) || PLACEHOLDER;
+      }
+
+      function formatVersion(value) {
+        const version = String(value ?? "").trim();
+        if (!version) return "";
+        return /^v/i.test(version) ? version : `v${version}`;
+      }
+
+      async function fetchWithTimeout(url, options = {}, timeout = 12000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeout);
+
+        try {
+          return await fetch(url, {
+            ...options,
+            cache: "no-store",
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+
+      function attachImageFallback(container) {
+        container.addEventListener("error", (event) => {
+          const image = event.target;
+          if (image instanceof HTMLImageElement && !image.dataset.fallbackApplied) {
+            image.dataset.fallbackApplied = "1";
+            image.src = PLACEHOLDER;
+            image.classList.add("is-fallback");
+          }
+        }, true);
+      }
+
+      function scrollToMods() {
+        const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.getElementById("mods").scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "start"
+        });
+      }
+
+      /* =======================================================
+         Database normalization
+         ======================================================= */
+      function normalizeMod(raw) {
+        if (!raw || typeof raw !== "object") return null;
+
+        const id = Number(raw.n);
+        if (!Number.isInteger(id) || id <= 0) return null;
+
+        const title = String(raw.t ?? "").trim();
+        if (!title) return null;
+
+        let categories = [];
+        if (Array.isArray(raw.c)) {
+          categories = raw.c.map((item) => String(item).trim()).filter(Boolean);
+        } else if (typeof raw.c === "string") {
+          categories = raw.c.split(",").map((item) => item.trim()).filter(Boolean);
+        }
+
+        return {
+          n: id,
+          title,
+          desc: raw.d ? String(raw.d).trim() : "",
+          cats: [...new Set(categories)],
+          thumb: resolveThumb(raw.p),
+          download: safeUrl(raw.l),
+          version: raw.v ? String(raw.v).trim() : ""
+        };
+      }
+
+      function normalizeMods(raw) {
+        let list = raw;
+
+        if (!Array.isArray(list)) {
+          if (Array.isArray(raw?.mods)) list = raw.mods;
+          else if (Array.isArray(raw?.data)) list = raw.data;
+          else if (raw && typeof raw === "object") list = Object.values(raw);
+          else return [];
+        }
+
+        return list.map(normalizeMod).filter(Boolean);
+      }
+
+      function matchesQuery(mod, query) {
+        const haystack = [
+          mod.title,
+          mod.desc,
+          mod.version,
+          ...mod.cats
+        ].join(" ").toLowerCase();
+
+        return query
+          .split(/\s+/)
+          .filter(Boolean)
+          .every((term) => haystack.includes(term));
+      }
+
+      /* =======================================================
+         Load and render mods
+         ======================================================= */
+      async function loadMods() {
+        state.status = "loading";
+        renderSkeletons();
+
+        try {
+          const response = await fetchWithTimeout(CONFIG.dataUrl, {
+            headers: { Accept: "application/json" }
+          });
+
+          if (!response.ok) {
+            throw new Error(`The mod database returned HTTP ${response.status}.`);
+          }
+
+          const json = await response.json();
+          state.mods = normalizeMods(json).sort(
+            (a, b) => b.n - a.n || a.title.localeCompare(b.title)
+          );
+          state.status = "ready";
+
+          buildCategories();
+          renderCategoryChips();
+          updateStats();
+          applyFilters(true);
+        } catch (error) {
+          state.status = "error";
+          renderError(error);
+        }
+      }
+
+      function buildCategories() {
+        const categoryMap = new Map();
+
+        state.mods.forEach((mod) => {
+          mod.cats.forEach((category) => {
+            const key = category.toLowerCase();
+            if (!categoryMap.has(key)) {
+              categoryMap.set(key, { name: category, count: 0 });
+            }
+            categoryMap.get(key).count += 1;
+          });
+        });
+
+        state.categories = [...categoryMap.values()].sort(
+          (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+        );
+
+        if (
+          state.category !== "all" &&
+          !state.categories.some(
+            (category) => category.name.toLowerCase() === state.category.toLowerCase()
+          )
+        ) {
+          state.category = "all";
+        }
+      }
+
+      function updateStats() {
+        dom.statMods.textContent = String(state.mods.length);
+        dom.statCats.textContent = String(state.categories.length);
+
+        const newest = state.mods.reduce((max, mod) => Math.max(max, mod.n), 0);
+        dom.statLatest.textContent = newest ? `#${newest}` : "—";
+      }
+
+      function renderCategoryChips() {
+        dom.categoryChips.replaceChildren();
+
+        dom.categoryChips.appendChild(
+          makeChip("All mods", "all", state.mods.length)
+        );
+
+        state.categories.forEach((category) => {
+          dom.categoryChips.appendChild(
+            makeChip(category.name, category.name, category.count)
+          );
+        });
+      }
+
+      function makeChip(label, value, count) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "chip";
+        button.dataset.category = value;
+
+        const active = state.category === value;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+
+        const text = document.createElement("span");
+        text.textContent = label;
+
+        const badge = document.createElement("span");
+        badge.className = "chip-count";
+        badge.textContent = String(count);
+
+        button.append(text, badge);
+        return button;
+      }
+
+      function updateChipState() {
+        dom.categoryChips.querySelectorAll(".chip").forEach((chip) => {
+          const active = chip.dataset.category === state.category;
+          chip.classList.toggle("is-active", active);
+          chip.setAttribute("aria-pressed", String(active));
+        });
+      }
+
+      function applyFilters(resetVisible = true) {
+        if (state.status !== "ready") return;
+
+        if (resetVisible) state.visible = CONFIG.pageSize;
+
+        const query = state.query.trim().toLowerCase();
+
+        state.filtered = state.mods.filter((mod) => {
+          if (
+            state.category !== "all" &&
+            !mod.cats.some(
+              (category) => category.toLowerCase() === state.category.toLowerCase()
+            )
+          ) {
+            return false;
+          }
+
+          if (query && !matchesQuery(mod, query)) return false;
+          return true;
+        });
+
+        renderGrid(true);
+        updateSummary();
+        updateChipState();
+      }
+
+      function renderGrid(reset = true) {
+        if (state.status === "loading") {
+          renderSkeletons();
+          return;
+        }
+
+        if (state.status === "error") return;
+
+        if (!state.mods.length) {
+          renderEmpty("empty");
+          return;
+        }
+
+        if (!state.filtered.length) {
+          renderEmpty("filtered");
+          return;
+        }
+
+        dom.modGrid.setAttribute("aria-busy", "false");
+
+        if (reset) {
+          dom.modGrid.replaceChildren();
+          state.rendered = 0;
+        }
+
+        const end = Math.min(state.visible, state.filtered.length);
+        if (state.rendered >= end) return;
+
+        const fragment = document.createDocumentFragment();
+
+        for (let index = state.rendered; index < end; index += 1) {
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = modCardTemplate(state.filtered[index]);
+          const card = wrapper.firstElementChild;
+          if (card) fragment.appendChild(card);
+        }
+
+        dom.modGrid.appendChild(fragment);
+        state.rendered = end;
+      }
+
+      function modCardTemplate(mod) {
+        const pageUrl = `/mod/${mod.n}.html`;
+        const title = escapeHtml(mod.title);
+        const titleAttr = escapeHtml(mod.title);
+        const description = escapeHtml(mod.desc || "No description provided yet.");
+        const version = formatVersion(mod.version);
+
+        const tags = mod.cats.slice(0, 3).map((category) => (
+          `<button type="button" class="tag" data-filter-cat="${escapeHtml(category)}" aria-label="Filter by ${escapeHtml(category)}">${escapeHtml(category)}</button>`
+        )).join("");
+
+        const versionBadge = version
+          ? `<span class="mod-version">${escapeHtml(version)}</span>`
+          : "";
+
+        const downloadLink = mod.download
+          ? `<a class="download-link" href="${escapeHtml(mod.download)}" target="_blank" rel="noopener noreferrer" aria-label="Download ${titleAttr}">${DOWNLOAD_ICON}</a>`
+          : "";
+
+        return `
+          <article class="mod-card">
+            <a class="mod-thumb" href="${pageUrl}" aria-label="View ${titleAttr}">
+              <img
+                src="${escapeHtml(mod.thumb)}"
+                alt="${titleAttr} thumbnail"
+                loading="lazy"
+                decoding="async"
+                width="640"
+                height="360"
+              >
+              ${versionBadge}
+            </a>
+            <div class="mod-body">
+              <div class="mod-tags">${tags}</div>
+              <h3><a href="${pageUrl}">${title}</a></h3>
+              <p class="mod-desc">${description}</p>
+              <div class="mod-foot">
+                <a class="mod-link" href="${pageUrl}">View mod ${ARROW_ICON}</a>
+                ${downloadLink}
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderSkeletons() {
+        state.rendered = 0;
+        dom.modGrid.setAttribute("aria-busy", "true");
+        dom.modGrid.innerHTML = Array.from({ length: 6 }, () => `
+          <article class="mod-card skeleton-card" aria-hidden="true">
+            <div class="skeleton-thumb"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line short"></div>
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line medium"></div>
+            </div>
+          </article>
+        `).join("");
+
+        dom.resultSummary.textContent = "Loading the mod database…";
+        dom.countBadge.textContent = "—";
+        dom.loadMoreWrap.hidden = true;
+        dom.clearFilters.hidden = true;
+      }
+
+      function renderEmpty(kind) {
+        state.rendered = 0;
+        dom.modGrid.setAttribute("aria-busy", "false");
+        dom.loadMoreWrap.hidden = true;
+
+        const noMods = kind === "empty";
+        const icon = noMods ? "+" : "⌕";
+        const title = noMods ? "The forge is empty" : "No mods found";
+        const message = noMods
+          ? "No mods have been published yet. Check back soon — the database will update automatically."
+          : "No mods match your current search or category filter. Try a different keyword or reset the filters.";
+
+        dom.modGrid.innerHTML = `
+          <div class="state-card">
+            <div class="state-icon" aria-hidden="true">${icon}</div>
+            <h3>${title}</h3>
+            <p>${message}</p>
+            ${
+              noMods
+                ? '<button class="button" type="button" data-retry>Refresh database</button>'
+                : '<button class="button" type="button" data-clear-filters>Clear filters</button>'
+            }
+          </div>
+        `;
+
+        dom.resultSummary.textContent = noMods
+          ? "No mods have been published yet."
+          : "No mods match your filters.";
+
+        dom.countBadge.textContent = noMods
+          ? "0 mods"
+          : `0 of ${state.mods.length} mods`;
+
+        dom.clearFilters.hidden = noMods;
+        updateHeading();
+      }
+
+      function renderError(error) {
+        state.rendered = 0;
+        state.filtered = [];
+        dom.modGrid.setAttribute("aria-busy", "false");
+        dom.loadMoreWrap.hidden = true;
+        dom.clearFilters.hidden = true;
+
+        const message = error?.name === "AbortError"
+          ? "The request timed out. Check your connection and try again."
+          : "The mod database could not be reached. It may be temporarily unavailable.";
+
+        dom.modGrid.innerHTML = `
+          <div class="state-card">
+            <div class="state-icon" aria-hidden="true">!</div>
+            <h3>Couldn’t load the mods</h3>
+            <p>${escapeHtml(message)}</p>
+            <button class="button" type="button" data-retry>Try again</button>
+          </div>
+        `;
+
+        dom.resultSummary.textContent = "The mod database is currently unavailable.";
+        dom.countBadge.textContent = "—";
+      }
+
+      function updateSummary() {
+        const total = state.filtered.length;
+        const shown = Math.min(state.visible, total);
+
+        if (!total) {
+          dom.resultSummary.textContent = state.mods.length
+            ? "No mods match your filters."
+            : "No mods have been published yet.";
+        } else {
+          dom.resultSummary.textContent = `Showing ${shown} of ${total} mod${total === 1 ? "" : "s"}`;
+        }
+
+        dom.countBadge.textContent = `${state.mods.length} mod${state.mods.length === 1 ? "" : "s"}`;
+
+        const remaining = total - shown;
+        dom.loadMoreWrap.hidden = remaining <= 0;
+
+        if (remaining > 0) {
+          dom.loadMoreBtn.textContent = `Load more (${remaining} left)`;
+        }
+
+        dom.clearFilters.hidden = !(state.query || state.category !== "all");
+        updateHeading();
+      }
+
+      function updateHeading() {
+        if (state.query) {
+          dom.modsHeading.textContent = "Search results";
+        } else if (state.category !== "all") {
+          dom.modsHeading.textContent = state.category;
+        } else {
+          dom.modsHeading.textContent = "Latest mods";
+        }
+      }
+
+      /* =======================================================
+         Search
+         ======================================================= */
+      function syncSearchInputs() {
+        dom.heroSearchInput.value = state.query;
+        dom.searchInput.value = state.query;
+      }
+
+      function applySearch(value) {
+        state.query = String(value ?? "").trim();
+        state.category = "all";
+        state.visible = CONFIG.pageSize;
+
+        syncSearchInputs();
+        applyFilters(true);
+        closeSearch(false);
+        scrollToMods();
+      }
+
+      function clearFilters() {
+        state.query = "";
+        state.category = "all";
+        state.visible = CONFIG.pageSize;
+
+        syncSearchInputs();
+        applyFilters(true);
+      }
+
+      function setCategory(category, shouldScroll = false) {
+        state.category = category;
+        state.visible = CONFIG.pageSize;
+
+        applyFilters(true);
+
+        if (shouldScroll) scrollToMods();
+      }
+
+      function openSearch() {
+        if (dom.searchOverlay.classList.contains("is-open")) {
+          dom.searchInput.focus();
+          return;
+        }
+
+        closeSidebar(false);
+        lastSearchFocus = document.activeElement;
+
+        dom.searchOverlay.classList.add("is-open");
+        dom.searchOverlay.setAttribute("aria-hidden", "false");
+        dom.searchOverlay.inert = false;
+        dom.searchToggle.setAttribute("aria-expanded", "true");
+
+        dom.searchInput.value = state.query;
+        updateSearchPreview();
+        dom.searchResults.scrollTop = 0;
+        syncScrollLock();
+
+        window.setTimeout(() => {
+          dom.searchInput.focus();
+          if (dom.searchInput.value) dom.searchInput.select();
+        }, 60);
+      }
+
+      function closeSearch(restoreFocus = true) {
+        if (!dom.searchOverlay.classList.contains("is-open")) return;
+
+        dom.searchOverlay.classList.remove("is-open");
+        dom.searchOverlay.setAttribute("aria-hidden", "true");
+        dom.searchOverlay.inert = true;
+        dom.searchToggle.setAttribute("aria-expanded", "false");
+        syncScrollLock();
+
+        if (restoreFocus && lastSearchFocus instanceof HTMLElement) {
+          lastSearchFocus.focus();
+        }
+      }
+
+      function updateSearchPreview() {
+        const query = dom.searchInput.value.trim();
+
+        if (state.status === "loading") {
+          dom.searchMeta.textContent = "Loading the mod database…";
+          dom.searchResults.replaceChildren();
+          dom.showAllResults.disabled = true;
+          dom.showAllResults.textContent = "Loading…";
+          return;
+        }
+
+        if (state.status === "error") {
+          dom.searchMeta.textContent = "The mod database is unavailable right now.";
+          dom.searchResults.innerHTML = '<p class="search-empty">Close search and try again after the database reconnects.</p>';
+          dom.showAllResults.disabled = true;
+          dom.showAllResults.textContent = "Search unavailable";
+          return;
+        }
+
+        if (!query) {
+          dom.searchMeta.textContent = `Search ${state.mods.length} mod${state.mods.length === 1 ? "" : "s"} by title, description, category or tag.`;
+          dom.searchResults.replaceChildren();
+          dom.showAllResults.disabled = true;
+          dom.showAllResults.textContent = "Show all results";
+          return;
+        }
+
+        const matches = state.mods.filter((mod) =>
+          matchesQuery(mod, query.toLowerCase())
+        );
+
+        dom.searchMeta.textContent = matches.length
+          ? `${matches.length} result${matches.length === 1 ? "" : "s"} for “${query}”`
+          : `No results for “${query}”`;
+
+        dom.showAllResults.disabled = matches.length === 0;
+        dom.showAllResults.textContent = matches.length
+          ? `Show all ${matches.length} result${matches.length === 1 ? "" : "s"}`
+          : "No results";
+
+        renderSearchResults(matches.slice(0, 5));
+      }
+
+      function renderSearchResults(results) {
+        if (!results.length) {
+          dom.searchResults.innerHTML = '<p class="search-empty">No mods match that search. Try a category like “Adventure” or a shorter keyword.</p>';
+          return;
+        }
+
+        dom.searchResults.innerHTML = results.map((mod) => {
+          const subtitle = [
+            mod.cats.slice(0, 2).join(" • "),
+            formatVersion(mod.version)
+          ].filter(Boolean).join(" • ");
+
+          return `
+            <a class="search-result" href="/mod/${mod.n}.html">
+              <img
+                src="${escapeHtml(mod.thumb)}"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width="160"
+                height="90"
+              >
+              <div>
+                <strong>${escapeHtml(mod.title)}</strong>
+                <span>${escapeHtml(subtitle || "Mod")}</span>
+              </div>
+            </a>
+          `;
+        }).join("");
+      }
+
+      /* =======================================================
+         Sidebar
+         ======================================================= */
+      function openSidebar() {
+        if (dom.sidebar.classList.contains("is-open")) return;
+
+        closeSearch(false);
+        lastSidebarFocus = document.activeElement;
+
+        dom.sidebar.classList.add("is-open");
+        dom.sidebar.setAttribute("aria-hidden", "false");
+        dom.sidebar.inert = false;
+
+        dom.scrim.classList.add("is-visible");
+        dom.scrim.setAttribute("aria-hidden", "false");
+
+        dom.menuToggle.setAttribute("aria-expanded", "true");
+        syncScrollLock();
+
+        window.setTimeout(() => {
+          const firstLink = dom.sidebar.querySelector(".side-link");
+          if (firstLink) firstLink.focus();
+        }, 100);
+      }
+
+      function closeSidebar(restoreFocus = true) {
+        if (!dom.sidebar.classList.contains("is-open")) return;
+
+        dom.sidebar.classList.remove("is-open");
+        dom.sidebar.setAttribute("aria-hidden", "true");
+        dom.sidebar.inert = true;
+
+        dom.scrim.classList.remove("is-visible");
+        dom.scrim.setAttribute("aria-hidden", "true");
+
+        dom.menuToggle.setAttribute("aria-expanded", "false");
+        syncScrollLock();
+
+        if (restoreFocus && lastSidebarFocus instanceof HTMLElement) {
+          lastSidebarFocus.focus();
+        }
+      }
+
+      function syncScrollLock() {
+        const locked =
+          dom.sidebar.classList.contains("is-open") ||
+          dom.searchOverlay.classList.contains("is-open");
+
+        document.body.classList.toggle("is-locked", locked);
+      }
+
+      /* =======================================================
+         Dynamic menu discovery
+         ======================================================= */
+      async function discoverMenu() {
+        dom.dynamicMenu.innerHTML = '<p class="menu-status">Discovering pages…</p>';
+
+        let items = [];
+
+        for (const candidate of CONFIG.menuCandidates) {
+          try {
+            const response = await fetchWithTimeout(candidate, {
+              headers: { Accept: "application/json, text/plain, */*" }
+            }, 8000);
+
+            if (!response.ok) continue;
+
+            const text = await response.text();
+
+            if (candidate.endsWith(".txt")) {
+              items = normalizeMenu(text.split(/\r?\n/));
+            } else {
+              let parsed;
+              try {
+                parsed = JSON.parse(text);
+              } catch (error) {
+                continue;
+              }
+              items = normalizeMenu(parsed);
+            }
+
+            if (items.length) break;
+          } catch (error) {
+            /* Try the next candidate. */
+          }
+        }
+
+        if (!items.length) {
+          try {
+            const response = await fetchWithTimeout(`${ORIGIN}/menu/`, {
+              headers: { Accept: "text/html" }
+            }, 8000);
+
+            if (response.ok) {
+              items = parseMenuDirectory(await response.text());
+            }
+          } catch (error) {
+            /* Directory listing unavailable. */
+          }
+        }
+
+        if (items.length) {
+          renderMenu(items);
+          return;
+        }
+
+        dom.dynamicMenu.innerHTML = '<p class="menu-status">Navigation is being updated. No menu pages were discovered automatically.</p>';
+
+        const retryButton = document.createElement("button");
+        retryButton.type = "button";
+        retryButton.className = "button button-ghost menu-retry";
+        retryButton.textContent = "Retry navigation";
+        retryButton.addEventListener("click", discoverMenu);
+        dom.dynamicMenu.appendChild(retryButton);
+      }
+
+      function normalizeMenu(data) {
+        let list = [];
+
+        if (Array.isArray(data)) {
+          list = data;
+        } else if (Array.isArray(data?.pages)) {
+          list = data.pages;
+        } else if (Array.isArray(data?.items)) {
+          list = data.items;
+        } else if (Array.isArray(data?.menu)) {
+          list = data.menu;
+        } else if (data?.pages && typeof data.pages === "object") {
+          list = Object.entries(data.pages).map(([file, label]) => ({ file, label }));
+        } else if (typeof data === "string") {
+          list = data.split(/\r?\n/);
+        }
+
+        const seen = new Set();
+
+        return list.map((item) => {
+          let file = "";
+          let label = "";
+
+          if (typeof item === "string") {
+            file = item;
+          } else if (item && typeof item === "object") {
+            file = item.file || item.href || item.url || item.path || "";
+            label = item.title || item.name || item.label || "";
+          }
+
+          file = String(file).trim();
+          if (!file) return null;
+
+          let candidate = file;
+
+          if (
+            !/^https?:\/\//i.test(candidate) &&
+            !/\.[a-z0-9]{2,5}(?:[?#].*)?$/i.test(candidate)
+          ) {
+            candidate += ".html";
+          }
+
+          let href = "";
+
+          if (/^https?:\/\//i.test(candidate)) {
+            href = safeUrl(candidate);
+          } else {
+            try {
+              const url = new URL(candidate, `${ORIGIN}/menu/`);
+
+              if (url.origin !== new URL(ORIGIN).origin) return null;
+              if (!url.pathname.startsWith("/menu/")) return null;
+              if (!/\.html?$/i.test(url.pathname)) return null;
+              if (/\/index\.html?$/i.test(url.pathname)) return null;
+
+              href = url.pathname + url.search;
+            } catch (error) {
+              return null;
+            }
+          }
+
+          if (!href || seen.has(href)) return null;
+          seen.add(href);
+
+          return {
+            href,
+            label: String(label).trim() || labelFromFile(href)
+          };
+        }).filter(Boolean);
+      }
+
+      function labelFromFile(href) {
+        let name = href.split("/").pop().split(/[?#]/)[0].replace(/\.html?$/i, "");
+
+        try {
+          name = decodeURIComponent(name);
+        } catch (error) {
+          /* Keep encoded name. */
+        }
+
+        name = name.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
+
+        if (!name || /^index$/i.test(name)) return "Menu";
+
+        return name.replace(/\b\w/g, (character) => character.toUpperCase());
+      }
+
+      function parseMenuDirectory(html) {
+        const documentFragment = new DOMParser().parseFromString(html, "text/html");
+        const anchors = [...documentFragment.querySelectorAll("a[href]")];
+
+        const items = anchors.map((anchor) => {
+          const href = anchor.getAttribute("href") || "";
+
+          if (!href || href.startsWith("?") || href.startsWith("#")) return null;
+
+          try {
+            const url = new URL(href, `${ORIGIN}/menu/`);
+
+            if (url.origin !== new URL(ORIGIN).origin) return null;
+            if (!url.pathname.startsWith("/menu/")) return null;
+            if (!/\.html?$/i.test(url.pathname)) return null;
+            if (/\/index\.html?$/i.test(url.pathname)) return null;
+
+            return {
+              file: url.pathname,
+              label: anchor.textContent.trim()
+            };
+          } catch (error) {
+            return null;
+          }
+        }).filter(Boolean);
+
+        return normalizeMenu(items);
+      }
+
+      function renderMenu(items) {
+        dom.dynamicMenu.replaceChildren();
+
+        const title = document.createElement("p");
+        title.className = "side-group-title";
+        title.textContent = "Pages";
+        dom.dynamicMenu.appendChild(title);
+
+        items.forEach((item) => {
+          const link = document.createElement("a");
+          link.className = "side-link";
+          link.href = item.href;
+
+          const text = document.createElement("span");
+          text.textContent = item.label;
+
+          const arrow = document.createElement("span");
+          arrow.className = "side-arrow";
+          arrow.setAttribute("aria-hidden", "true");
+          arrow.innerHTML = ARROW_ICON;
+
+          link.append(text, arrow);
+          dom.dynamicMenu.appendChild(link);
+        });
+      }
+
+      /* =======================================================
+         Event wiring
+         ======================================================= */
+      function bindEvents() {
+        dom.headerImage.addEventListener("error", () => {
+          dom.headerImage.classList.add("is-hidden");
+          dom.headerImage.setAttribute("aria-hidden", "true");
+        });
+
+        dom.menuToggle.addEventListener("click", openSidebar);
+        dom.sidebarClose.addEventListener("click", () => closeSidebar());
+        dom.scrim.addEventListener("click", () => closeSidebar());
+
+        dom.searchToggle.addEventListener("click", openSearch);
+        dom.searchClose.addEventListener("click", () => closeSearch());
+
+        dom.searchOverlay.addEventListener("click", (event) => {
+          if (event.target === dom.searchOverlay) closeSearch();
+        });
+
+        dom.searchInput.addEventListener("input", updateSearchPreview);
+
+        dom.searchForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          applySearch(dom.searchInput.value);
+        });
+
+        dom.heroSearchForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          applySearch(dom.heroSearchInput.value);
+        });
+
+        dom.showAllResults.addEventListener("click", () => {
+          if (dom.showAllResults.disabled) return;
+          applySearch(dom.searchInput.value);
+        });
+
+        dom.categoryChips.addEventListener("click", (event) => {
+          const chip = event.target.closest(".chip");
+          if (!chip) return;
+          setCategory(chip.dataset.category, true);
+        });
+
+        dom.modGrid.addEventListener("click", (event) => {
+          if (!(event.target instanceof Element)) return;
+
+          const tag = event.target.closest("[data-filter-cat]");
+          if (tag) {
+            event.preventDefault();
+            setCategory(tag.dataset.filterCat, true);
+            return;
+          }
+
+          if (event.target.closest("[data-retry]")) {
+            loadMods();
+            return;
+          }
+
+          if (event.target.closest("[data-clear-filters]")) {
+            clearFilters();
+          }
+        });
+
+        dom.loadMoreBtn.addEventListener("click", () => {
+          if (state.status !== "ready") return;
+          state.visible += CONFIG.pageSize;
+          renderGrid(false);
+          updateSummary();
+        });
+
+        dom.clearFilters.addEventListener("click", clearFilters);
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            if (dom.searchOverlay.classList.contains("is-open")) {
+              closeSearch();
+            } else if (dom.sidebar.classList.contains("is-open")) {
+              closeSidebar();
+            }
+            return;
+          }
+
+          if (
+            (event.ctrlKey || event.metaKey) &&
+            event.key.toLowerCase() === "k"
+          ) {
+            event.preventDefault();
+            openSearch();
+          }
+        });
+      }
+
+      /* =======================================================
+         Init
+         ======================================================= */
+      function init() {
+        dom.sidebar.inert = true;
+        dom.searchOverlay.inert = true;
+
+        dom.year.textContent = String(new Date().getFullYear());
+
+        attachImageFallback(dom.modGrid);
+        attachImageFallback(dom.searchResults);
+
+        bindEvents();
+        loadMods();
+        discoverMenu();
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
