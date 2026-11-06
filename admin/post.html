@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Admin — BlockFoundry</title>
+
+  <style>
+    /* =========================================================
+       Design tokens
+       ========================================================= */
+    :root {
+      --bg: #0b0f0d;
+      --card: #111814;
+      --surface: #151f1a;
+      --surface-2: #1b2821;
+      --surface-3: #22332b;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.16);
+      --text: #f2f6f3;
+      --muted: #95a89d;
+      --muted-2: #6f8176;
+      --green: #52c41a;
+      --green-strong: #6ee73a;
+      --green-dim: rgba(82, 196, 26, 0.12);
+      --green-line: rgba(82, 196, 26, 0.35);
+      --red: #ef4444;
+      --red-dim: rgba(239, 68, 68, 0.12);
+      --yellow: #f5c518;
+      --radius: 14px;
+      --radius-lg: 18px;
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      --container: 1200px;
+    }
+
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    html {
+      background: var(--bg);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont,
+                   "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 520px at 85% -10%, rgba(82, 196, 26, 0.09), transparent 65%),
+        radial-gradient(650px 420px at 0% 35%, rgba(82, 196, 26, 0.04), transparent 60%);
+    }
+
+    body.is-locked { overflow: hidden; }
+
+    img { max-width: 100%; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    :focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 3px;
+    }
+
+    [hidden] { display: none !important; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--container));
+      margin-inline: auto;
+    }
+
+    .muted { color: var(--muted); }
+    .req { color: var(--red); font-weight: 700; }
+
+    /* =========================================================
+       Buttons
+       ========================================================= */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.2;
+      border: 1px solid transparent;
+      transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+      user-select: none;
+      text-align: center;
+    }
+
+    .btn:disabled,
+    .btn[aria-disabled="true"] {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      border-color: var(--green);
+      color: #071006;
+    }
+    .btn-primary:hover {
+      background: var(--green-strong);
+      border-color: var(--green-strong);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      border-color: var(--line-strong);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: var(--surface-3);
+      border-color: var(--green-line);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: var(--line);
+      color: var(--muted);
+    }
+    .btn-ghost:hover {
+      border-color: var(--line-strong);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: transparent;
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #ff8a8a;
+    }
+    .btn-danger:hover {
+      background: var(--red-dim);
+      border-color: var(--red);
+      color: #ffb8b8;
+    }
+
+    .btn.is-loading {
+      position: relative;
+      color: transparent !important;
+    }
+    .btn.is-loading::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 16px;
+      height: 16px;
+      margin: -8px 0 0 -8px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      color: #071006;
+      animation: spin 0.6s linear infinite;
+    }
+    .btn-secondary.is-loading::after { color: var(--green-strong); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* =========================================================
+       Auth view
+       ========================================================= */
+    .auth-view {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      padding: 32px 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-mark {
+      width: 10px;
+      height: 10px;
+      background: var(--green);
+      box-shadow: 11px 0 0 rgba(82, 196, 26, 0.35);
+      border-radius: 2px;
+    }
+
+    .auth-card h1 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .auth-card .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    .config-info {
+      margin-bottom: 20px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface);
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .config-info strong { color: #d5e2d9; }
+
+    .token-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .token-wrap input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .token-wrap input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.13);
+    }
+
+    .token-toggle {
+      padding: 0 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
+    }
+    .token-toggle:hover {
+      background: var(--surface-3);
+      border-color: var(--green-line);
+      color: #fff;
+    }
+
+    .warning {
+      margin: 18px 0 22px;
+      padding: 12px 14px;
+      border: 1px solid rgba(245, 197, 24, 0.35);
+      border-radius: 10px;
+      background: rgba(245, 197, 24, 0.06);
+      color: #e0c66a;
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+    .warning strong { color: var(--yellow); }
+
+    .auth-error {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 10px;
+      background: var(--red-dim);
+      color: #ffb8b8;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       Dashboard
+       ========================================================= */
+    .dashboard { min-height: 100vh; }
+
+    .dash-header {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #0f1713, #0b100d);
+      padding: 20px 0;
+    }
+
+    .dash-header-inner {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .dash-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .dash-title {
+      margin: 0;
+      padding: 6px 12px;
+      border: 1px solid var(--green-line);
+      border-radius: 6px;
+      background: var(--green-dim);
+      color: var(--green-strong);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .dash-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .status-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--muted-2);
+    }
+    .status-pill.is-connected {
+      color: #b9e5b3;
+      border-color: rgba(82, 196, 26, 0.35);
+      background: var(--green-dim);
+    }
+    .status-pill.is-connected::before {
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.2);
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+      margin: 24px 0;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .stat-value {
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .stat-value.is-mono {
+      font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, monospace;
+      font-size: 0.92rem;
+      color: #d5e2d9;
+    }
+
+    .stats-actions {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .stats-actions .btn {
+      flex: 1;
+      padding: 16px 18px;
+      font-size: 0.88rem;
+    }
+
+    /* Cards */
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--card);
+      padding: 26px 24px;
+      margin-bottom: 24px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .card-head h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .card-head .hint {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .field { display: flex; flex-direction: column; gap: 8px; }
+
+    .field label {
+      color: #d5e2d9;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 11px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.94rem;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .field textarea {
+      min-height: 160px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.6;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: #7e8f85;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: var(--green);
+      background: var(--surface-2);
+      box-shadow: 0 0 0 3px rgba(82, 196, 26, 0.13);
+    }
+    .field input[readonly] {
+      background: var(--surface-2);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    .field-error {
+      color: #ff9b9b;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+    .field-error:empty { display: none; }
+
+    /* Category chips */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+      color: #c9d6ce;
+      font-size: 0.84rem;
+      font-weight: 600;
+      transition: background 0.18s, border-color 0.18s, color 0.18s;
+    }
+    .chip:hover {
+      border-color: var(--green-line);
+      background: var(--surface-2);
+      color: #fff;
+    }
+    .chip.is-selected {
+      background: var(--green);
+      border-color: var(--green);
+      color: #071006;
+      font-weight: 800;
+    }
+    .chip.is-selected:hover {
+      background: var(--green-strong);
+      border-color: var(--green-strong);
+    }
+    .chip .x {
+      font-size: 0.9em;
+      opacity: 0.8;
+      font-weight: 800;
+    }
+    .chip .x:hover { opacity: 1; }
+
+    .custom-cat-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+      margin-top: 8px;
+    }
+    .custom-cat-row input {
+      flex: 1;
+      min-width: 0;
+    }
+    .custom-cat-row .btn {
+      padding: 11px 16px;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .selected-label {
+      margin-top: 12px;
+      color: var(--muted-2);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* Thumbnail preview */
+    .preview-wrap {
+      margin-top: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+    }
+    .preview-wrap img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #0a0e0c;
+    }
+
+    /* ID row */
+    .id-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .id-row input {
+      flex: 1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+    }
+    .id-row .btn {
+      padding: 0 16px;
+      font-size: 0.82rem;
+    }
+
+    /* Form footer */
+    .form-footer {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .form-footer .btn-primary {
+      min-width: 200px;
+    }
+    .form-footer .spacer { flex: 1; }
+
+    .form-alert {
+      grid-column: 1 / -1;
+      padding: 12px 14px;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 10px;
+      background: var(--red-dim);
+      color: #ffb8b8;
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+    .form-alert.success {
+      border-color: rgba(82, 196, 26, 0.4);
+      background: var(--green-dim);
+      color: #b9e5b3;
+    }
+
+    /* =========================================================
+       Success view
+       ========================================================= */
+    .success-card {
+      border-color: rgba(82, 196, 26, 0.35);
+      box-shadow: 0 0 0 1px rgba(82, 196, 26, 0.18), var(--shadow);
+    }
+    .success-card .card-head {
+      border-bottom-color: rgba(82, 196, 26, 0.25);
+    }
+    .success-card .card-head h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--green-strong);
+    }
+    .success-icon {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--green);
+      color: #071006;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    .success-body {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+      align-items: start;
+    }
+    .success-thumb {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      background: #0a0e0c;
+    }
+    .success-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .success-info dl {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+    }
+    .success-info dt {
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .success-info dd {
+      margin: 0;
+      color: #fff;
+      font-size: 0.94rem;
+      word-break: break-word;
+    }
+    .success-info dd.title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .success-info a {
+      color: var(--green-strong);
+      font-weight: 600;
+    }
+    .success-info a:hover { text-decoration: underline; }
+
+    .success-actions {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .success-actions .btn { flex: 1; min-width: 160px; }
+
+    /* =========================================================
+       Toast
+       ========================================================= */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 200;
+      transform: translate(-50%, 120%);
+      padding: 12px 18px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      transition: transform 0.22s ease;
+      pointer-events: none;
+      max-width: calc(100% - 32px);
+    }
+    .toast.is-visible {
+      transform: translate(-50%, 0);
+    }
+    .toast.is-success {
+      border-color: rgba(82, 196, 26, 0.4);
+      background: var(--surface-2);
+      color: var(--green-strong);
+    }
+    .toast.is-error {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ffb8b8;
+    }
+
+    /* =========================================================
+       Responsive
+       ========================================================= */
+    @media (max-width: 720px) {
+      .container { width: min(calc(100% - 28px), var(--container)); }
+      .card { padding: 20px 18px; }
+      .auth-card { padding: 24px 20px; }
+      .dash-header { padding: 14px 0; }
+      .dash-header-inner { gap: 10px; }
+      .dash-title { font-size: 0.68rem; padding: 5px 10px; }
+      .success-body { grid-template-columns: 1fr; }
+      .success-thumb { max-width: 320px; }
+      .form-footer .btn-primary { min-width: 0; flex: 1; }
+    }
+
+    @media (max-width: 480px) {
+      .auth-view { padding: 16px 12px; }
+      .token-wrap { flex-direction: column; }
+      .token-toggle { padding: 10px 14px; }
+      .stats-actions { flex-direction: column; }
+      .form-footer .btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     Auth view
+     ========================================================= -->
+<section class="auth-view" id="authView">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      BlockFoundry
+    </div>
+
+    <h1>Administrator Access</h1>
+    <p class="subtitle">
+      Sign in with a GitHub Personal Access Token that has write access to the
+      BlockFoundry repository. The token is used only to publish mods and is
+      never sent anywhere except GitHub.
+    </p>
+
+    <div class="config-info">
+      Repository: <strong>attackndestroy/blockfoundry</strong><br>
+      Branch: <strong>main</strong><br>
+      Database: <strong>mod/data.json</strong>
+    </div>
+
+    <form id="authForm" autocomplete="off" novalidate>
+      <div class="field">
+        <label for="tokenInput">Personal Access Token</label>
+        <div class="token-wrap">
+          <input
+            type="password"
+            id="tokenInput"
+            name="token"
+            placeholder="ghp_… or github_pat_…"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          >
+          <button type="button" class="token-toggle" id="toggleTokenBtn" aria-controls="tokenInput">
+            Show
+          </button>
+        </div>
+      </div>
+
+      <div class="warning" role="note">
+        <strong>Security notice:</strong> the token is stored unencrypted in
+        this browser's <code>localStorage</code>. Only sign in on a trusted,
+        private device, and use <em>Logout</em> when you are finished.
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="authBtn" style="width:100%;">
+        Authenticate
+      </button>
+
+      <div class="auth-error" id="authError" role="alert" hidden></div>
+    </form>
+  </div>
+</section>
+
+<!-- =========================================================
+     Dashboard view
+     ========================================================= -->
+<div class="dashboard" id="dashboardView" hidden>
+
+  <header class="dash-header">
+    <div class="container dash-header-inner">
+      <div class="dash-brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        BlockFoundry
+      </div>
+      <h1 class="dash-title">MOD PUBLISHER</h1>
+      <div class="dash-actions">
+        <span class="status-pill is-connected" id="statusPill">Connected</span>
+        <button type="button" class="btn btn-ghost" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:8px;padding-bottom:48px;">
+
+    <!-- Stats -->
+    <section class="stats-grid" aria-label="Repository status">
+      <div class="stat-card">
+        <span class="stat-label">Repository</span>
+        <span class="stat-value is-mono" id="repoValue">attackndestroy/blockfoundry</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Branch</span>
+        <span class="stat-value is-mono">main</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Mods</span>
+        <span class="stat-value" id="totalModsValue">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Next ID</span>
+        <span class="stat-value" id="nextIdValue">—</span>
+      </div>
+      <div class="stats-actions">
+        <button type="button" class="btn btn-secondary" id="refreshStatsBtn">
+          Refresh Database
+        </button>
+      </div>
+    </section>
+
+    <!-- Publish form -->
+    <section class="card" id="formSection" aria-labelledby="formHeading">
+      <div class="card-head">
+        <h2 id="formHeading">Publish New Mod</h2>
+        <span class="hint">All fields marked <span class="req">*</span> are required.</span>
+      </div>
+
+      <form id="modForm" novalidate>
+        <div class="form-grid">
+
+          <div class="form-alert" id="formAlert" role="alert" hidden></div>
+
+          <!-- Title -->
+          <div class="field">
+            <label for="titleInput">Mod Title <span class="req">*</span></label>
+            <input
+              type="text"
+              id="titleInput"
+              placeholder="Enter mod title"
+              maxlength="120"
+              autocomplete="off"
+            >
+            <div class="field-error" id="titleError"></div>
+          </div>
+
+          <!-- Mod ID -->
+          <div class="field">
+            <label for="modId">Mod ID (auto-assigned)</label>
+            <div class="id-row">
+              <input type="text" id="modId" readonly value="—">
+              <button type="button" class="btn btn-secondary" id="refreshIdBtn">
+                Refresh
+              </button>
+            </div>
+            <div class="field-error" id="idError"></div>
+          </div>
+
+          <!-- Description -->
+          <div class="field full">
+            <label for="descInput">Description <span class="req">*</span></label>
+            <textarea
+              id="descInput"
+              placeholder="Describe the mod. Use blank lines for paragraphs and lines starting with &quot;- &quot; for bullet points."
+              maxlength="8000"
+            ></textarea>
+            <div class="field-error" id="descError"></div>
+          </div>
+
+          <!-- Categories -->
+          <div class="field full">
+            <label>Categories <span class="req">*</span></label>
+            <div class="chips" id="suggestedChips" aria-label="Suggested categories"></div>
+            <div class="custom-cat-row">
+              <input
+                type="text"
+                id="customCategory"
+                placeholder="Add a custom category"
+                maxlength="40"
+                autocomplete="off"
+              >
+              <button type="button" class="btn btn-secondary" id="addCategoryBtn">
+                Add
+              </button>
+            </div>
+            <div class="selected-label">Selected categories</div>
+            <div class="chips" id="selectedChips" aria-live="polite"></div>
+            <div class="field-error" id="categoriesError"></div>
+          </div>
+
+          <!-- Thumbnail -->
+          <div class="field full">
+            <label for="thumbnailInput">Thumbnail URL <span class="req">*</span></label>
+            <input
+              type="url"
+              id="thumbnailInput"
+              placeholder="https://example.com/thumbnail.png"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <div class="field-error" id="thumbnailError"></div>
+            <div class="preview-wrap">
+              <img id="thumbnailPreview" alt="Thumbnail preview" width="640" height="360" loading="lazy" decoding="async">
+            </div>
+          </div>
+
+          <!-- Download -->
+          <div class="field full">
+            <label for="downloadInput">Download Link <span class="req">*</span></label>
+            <input
+              type="url"
+              id="downloadInput"
+              placeholder="https://example.com/download"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <div class="field-error" id="downloadError"></div>
+          </div>
+
+          <!-- Version -->
+          <div class="field">
+            <label for="versionInput">Version <span class="muted">(optional)</span></label>
+            <input
+              type="text"
+              id="versionInput"
+              placeholder="e.g. 1.21.50"
+              maxlength="40"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <div class="field-error" id="versionError"></div>
+          </div>
+
+        </div>
+
+        <div class="form-footer">
+          <button type="submit" class="btn btn-primary" id="publishBtn">
+            PUBLISH MOD
+          </button>
+          <span class="spacer"></span>
+          <button type="button" class="btn btn-ghost" id="resetBtn">
+            Reset Form
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Success view -->
+    <section class="card success-card" id="successSection" aria-labelledby="successHeading" hidden>
+      <div class="card-head">
+        <h2 id="successHeading">
+          <span class="success-icon" aria-hidden="true">✓</span>
+          Mod Published Successfully
+        </h2>
+      </div>
+
+      <div class="success-body">
+        <div class="success-thumb">
+          <img id="successThumb" alt="Published mod thumbnail" width="640" height="360" loading="lazy">
+        </div>
+        <div class="success-info">
+          <dl>
+            <div>
+              <dt>Title</dt>
+              <dd class="title" id="successTitle">—</dd>
+            </div>
+            <div>
+              <dt>Mod ID</dt>
+              <dd id="successId">—</dd>
+            </div>
+            <div>
+              <dt>Categories</dt>
+              <dd id="successCategories">—</dd>
+            </div>
+            <div>
+              <dt>Mod Page</dt>
+              <dd>
+                <a id="successUrl" href="#" target="_blank" rel="noopener noreferrer">—</a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <div class="success-actions">
+        <a class="btn btn-primary" id="viewModBtn" href="#" target="_blank" rel="noopener noreferrer">
+          VIEW MOD PAGE
+        </a>
+        <button type="button" class="btn btn-secondary" id="publishAnotherBtn">
+          PUBLISH ANOTHER MOD
+        </button>
+        <button type="button" class="btn btn-secondary" id="copyUrlBtn">
+          COPY MOD URL
+        </button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- =========================================================
+     Script
+     ========================================================= -->
+<script>
+(() => {
+"use strict";
+
+/* =========================================================
+   Configuration
+   ========================================================= */
+const CONFIG = Object.freeze({
+  owner: "attackndestroy",
+  repo: "blockfoundry",
+  branch: "main",
+  dbPath: "mod/data.json",
+  siteUrl: "https://blockfoundry.attdes.online",
+  api: "https://api.github.com",
+  tokenKey: "bf_admin_token",
+  suggestedCategories: [
+    "Adventure", "Animals", "Armor", "Blocks", "Decoration",
+    "Food", "Furniture", "Magic", "Mobs", "Optimization",
+    "Shaders", "Tools", "Weapons", "Utility", "World Generation"
+  ],
+  maxId: 999
+});
+
+const PLACEHOLDER_SVG = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">' +
+    '<rect width="640" height="360" fill="#0f1813"/>' +
+    '<g fill="none" stroke="#52c41a" stroke-opacity=".22">' +
+      '<path d="M0 90h640M0 180h640M0 270h640M160 0v360M320 0v360M480 0v360"/>' +
+    '</g>' +
+    '<text x="320" y="192" text-anchor="middle" font-family="system-ui,sans-serif" ' +
+      'font-size="34" font-weight="800" fill="#52c41a" fill-opacity=".85">BLOCKFOUNDRY</text>' +
+  '</svg>'
+);
+
+/* =========================================================
+   DOM references
+   ========================================================= */
+const $ = (id) => document.getElementById(id);
+
+const els = {
+  // views
+  authView: $("authView"),
+  dashboardView: $("dashboardView"),
+
+  // auth
+  authForm: $("authForm"),
+  tokenInput: $("tokenInput"),
+  toggleTokenBtn: $("toggleTokenBtn"),
+  authBtn: $("authBtn"),
+  authError: $("authError"),
+
+  // header
+  logoutBtn: $("logoutBtn"),
+  statusPill: $("statusPill"),
+
+  // stats
+  repoValue: $("repoValue"),
+  totalModsValue: $("totalModsValue"),
+  nextIdValue: $("nextIdValue"),
+  refreshStatsBtn: $("refreshStatsBtn"),
+
+  // form
+  formSection: $("formSection"),
+  modForm: $("modForm"),
+  formAlert: $("formAlert"),
+
+  titleInput: $("titleInput"),
+  descInput: $("descInput"),
+  modId: $("modId"),
+  refreshIdBtn: $("refreshIdBtn"),
+
+  suggestedChips: $("suggestedChips"),
+  customCategory: $("customCategory"),
+  addCategoryBtn: $("addCategoryBtn"),
+  selectedChips: $("selectedChips"),
+
+  thumbnailInput: $("thumbnailInput"),
+  thumbnailPreview: $("thumbnailPreview"),
+  downloadInput: $("downloadInput"),
+  versionInput: $("versionInput"),
+
+  publishBtn: $("publishBtn"),
+  resetBtn: $("resetBtn"),
+
+  // field errors
+  titleError: $("titleError"),
+  idError: $("idError"),
+  descError: $("descError"),
+  categoriesError: $("categoriesError"),
+  thumbnailError: $("thumbnailError"),
+  downloadError: $("downloadError"),
+  versionError: $("versionError"),
+
+  // success
+  successSection: $("successSection"),
+  successTitle: $("successTitle"),
+  successId: $("successId"),
+  successCategories: $("successCategories"),
+  successUrl: $("successUrl"),
+  successThumb: $("successThumb"),
+  viewModBtn: $("viewModBtn"),
+  publishAnotherBtn: $("publishAnotherBtn"),
+  copyUrlBtn: $("copyUrlBtn"),
+
+  // toast
+  toast: $("toast")
+};
+
+/* =========================================================
+   State
+   ========================================================= */
+const state = {
+  token: null,
+  user: null,
+  database: null,       // parsed array
+  databaseSha: null,    // latest sha
+  publishing: false,
+  selectedCategories: []
+};
+
+let toastTimer = null;
+
+/* =========================================================
+   Utility helpers
+   ========================================================= */
+
+/** Escape a string for safe insertion into text/attribute contexts. */
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
+
+/** Return true if the string parses to an http(s) URL. */
+function isValidHttpUrl(str) {
+  if (!str) return false;
+  try {
+    const url = new URL(str);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch (error) {
+    return false;
+  }
+}
+
+/** Base64-encode a UTF-8 string (safe for GitHub API payloads). */
+function b64EncodeUnicode(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+/** Base64-decode a UTF-8 string. */
+function b64DecodeUnicode(b64) {
+  const binary = atob(String(b64 || "").replace(/\s/g, ""));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
+}
+
+/** Copy text to clipboard with a legacy fallback. */
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (error) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (fallbackError) {
+      return false;
+    }
+  }
+}
+
+/** Show a bottom toast. */
+function showToast(message, kind = "") {
+  if (!els.toast) return;
+  clearTimeout(toastTimer);
+
+  els.toast.textContent = message;
+  els.toast.className = "toast" + (kind ? " is-" + kind : "");
+  // force reflow so transition restarts
+  void els.toast.offsetWidth;
+  els.toast.classList.add("is-visible");
+
+  toastTimer = setTimeout(() => {
+    els.toast.classList.remove("is-visible");
+  }, 3200);
+}
+
+/** Toggle a button's loading state. */
+function setLoading(button, loading, label) {
+  if (!button) return;
+  if (loading) {
+    button.dataset.originalLabel = button.textContent;
+    button.classList.add("is-loading");
+    button.disabled = true;
+    if (label) button.setAttribute("aria-label", label);
+  } else {
+    button.classList.remove("is-loading");
+    button.disabled = false;
+    button.removeAttribute("aria-label");
+    if (button.dataset.originalLabel) {
+      button.textContent = button.dataset.originalLabel;
+      delete button.dataset.originalLabel;
+    }
+  }
+}
+
+/* =========================================================
+   GitHub API layer
+   ========================================================= */
+
+/**
+ * Low-level authenticated GitHub fetch.
+ * Only ever talks to api.github.com.
+ */
+async function ghFetch(path, { method = "GET", body, headers = {}, token = state.token } = {}) {
+  if (!token) throw new Error("Missing authentication token.");
+
+  const response = await fetch(`${CONFIG.api}${path}`, {
+    method,
+    cache: "no-store",
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+      ...(body ? { "Content-Type": "application/json" } : {}),
+      ...headers
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  return response;
+}
+
+/** Read an error message out of a failed GitHub response. */
+async function readGhError(response) {
+  try {
+    const data = await response.json();
+    return data && data.message ? String(data.message) : `HTTP ${response.status}`;
+  } catch (error) {
+    return `HTTP ${response.status}`;
+  }
+}
+
+/** Verify the token belongs to a valid GitHub user. */
+async function validateToken(token) {
+  const response = await ghFetch("/user", { token });
+  if (!response.ok) {
+    throw new Error(
+      response.status === 401
+        ? "Invalid token. Please check your Personal Access Token."
+        : await readGhError(response)
+    );
+  }
+  const user = await response.json();
+  return { user, headers: response.headers };
+}
+
+/** Verify the token can access the repository with write permission. */
+async function verifyRepoAccess(token) {
+  const response = await ghFetch(`/repos/${CONFIG.owner}/${CONFIG.repo}`, { token });
+  if (response.status === 404) {
+    throw new Error(
+      "Repository not found, or this token does not have access to it. " +
+      "Ensure the token has the 'repo' (or 'Contents: Read and write') scope."
+    );
+  }
+  if (!response.ok) {
+    throw new Error(await readGhError(response));
+  }
+  const repo = await response.json();
+
+  // permissions may be absent for some token types; treat "unknown" as ok if push is allowed elsewhere
+  const perms = repo.permissions || {};
+  if (perms.push === false) {
+    throw new Error(
+      "This token can read the repository but cannot push. " +
+      "Grant 'Contents: Read and write' permission."
+    );
+  }
+  return repo;
+}
+
+/** Read the latest data.json (raw text + sha). */
+async function getDatabaseFile(token = state.token) {
+  const response = await ghFetch(
+    `/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}?ref=${CONFIG.branch}`,
+    { token }
+  );
+
+  if (response.status === 404) {
+    // Treat missing file as an empty database — do not silently create it.
+    return { content: "[]", sha: null, missing: true };
+  }
+  if (!response.ok) {
+    throw new Error(await readGhError(response));
+  }
+
+  const file = await response.json();
+  const raw = b64DecodeUnicode(file.content);
+  return { content: raw, sha: file.sha, missing: false };
+}
+
+/**
+ * Update data.json on the configured branch.
+ * Returns { ok, sha } or throws on failure.
+ */
+async function putDatabaseFile(content, sha, message, token = state.token) {
+  const payload = {
+    message,
+    content: b64EncodeUnicode(content),
+    branch: CONFIG.branch
+  };
+  if (sha) payload.sha = sha;
+
+  const response = await ghFetch(
+    `/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.dbPath}`,
+    { method: "PUT", body: payload, token }
+  );
+
+  if (response.status === 409) {
+    const conflict = new Error("Conflict");
+    conflict.status = 409;
+    throw conflict;
+  }
+  if (!response.ok) {
+    const message = await readGhError(response);
+    const err = new Error(message);
+    err.status = response.status;
+    throw err;
+  }
+  return await response.json();
+}
+
+/* =========================================================
+   Database state
+   ========================================================= */
+
+/** Parse a raw data.json string into an array. */
+function parseDatabase(raw) {
+  const trimmed = String(raw ?? "").trim();
+  if (!trimmed) return [];
+  let parsed;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch (error) {
+    throw new Error("The database returned invalid JSON.");
+  }
+
+  // Accept either an array or {mods:[...]}
+  if (Array.isArray(parsed)) return parsed;
+  if (parsed && Array.isArray(parsed.mods)) return parsed.mods;
+  if (parsed && Array.isArray(parsed.data)) return parsed.data;
+  return [];
+}
+
+/** Compute the next available numeric ID for a mod array. */
+function computeNextId(mods) {
+  const used = new Set();
+  for (const mod of mods) {
+    const n = Number(mod && mod.n);
+    if (Number.isInteger(n) && n > 0) used.add(n);
+  }
+  let id = 1;
+  while (used.has(id)) id += 1;
+  return id;
+}
+
+/** Load the database from GitHub and update state + UI. */
+async function loadDatabase({ showLoading = true } = {}) {
+  if (showLoading) setLoading(els.refreshStatsBtn, true);
+  try {
+    const file = await getDatabaseFile();
+    const mods = parseDatabase(file.content);
+
+    state.database = mods;
+    state.databaseSha = file.sha;
+
+    const nextId = computeNextId(mods);
+
+    els.totalModsValue.textContent = String(mods.length);
+    els.nextIdValue.textContent = `#${nextId} (${Math.max(0, CONFIG.maxId - mods.length)} slots free)`;
+    els.modId.value = String(nextId);
+
+    if (file.missing) {
+      showToast("Database file not found — publishing will create it.", "error");
+    }
+  } catch (error) {
+    state.database = null;
+    state.databaseSha = null;
+    els.totalModsValue.textContent = "—";
+    els.nextIdValue.textContent = "—";
+    els.modId.value = "—";
+    showToast(error.message || "Could not load the database.", "error");
+  } finally {
+    if (showLoading) setLoading(els.refreshStatsBtn, false);
+  }
+}
+
+/* =========================================================
+   Categories
+   ========================================================= */
+
+/** Render the suggested category chip buttons. */
+function renderSuggestedChips() {
+  els.suggestedChips.innerHTML = "";
+  for (const cat of CONFIG.suggestedCategories) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chip";
+    btn.dataset.category = cat;
+    btn.textContent = cat;
+    if (state.selectedCategories.includes(cat)) {
+      btn.classList.add("is-selected");
+      btn.setAttribute("aria-pressed", "true");
+    } else {
+      btn.setAttribute("aria-pressed", "false");
+    }
+    els.suggestedChips.appendChild(btn);
+  }
+}
+
+/** Render the "selected categories" list with removable chips. */
+function renderSelectedChips() {
+  els.selectedChips.innerHTML = "";
+
+  if (state.selectedCategories.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "muted";
+    empty.style.fontSize = "0.82rem";
+    empty.textContent = "No categories selected yet.";
+    els.selectedChips.appendChild(empty);
+    return;
+  }
+
+  for (const cat of state.selectedCategories) {
+    const chip = document.createElement("span");
+    chip.className = "chip is-selected";
+
+    const label = document.createElement("span");
+    label.textContent = cat;
+
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "x";
+    x.style.background = "transparent";
+    x.style.border = "0";
+    x.style.color = "inherit";
+    x.style.cursor = "pointer";
+    x.style.padding = "0";
+    x.setAttribute("aria-label", `Remove category ${cat}`);
+    x.textContent = "×";
+    x.addEventListener("click", () => removeCategory(cat));
+
+    chip.append(label, x);
+    els.selectedChips.appendChild(chip);
+  }
+}
+
+/** Toggle a category. */
+function toggleCategory(cat) {
+  const idx = state.selectedCategories.indexOf(cat);
+  if (idx >= 0) {
+    state.selectedCategories.splice(idx, 1);
+  } else {
+    state.selectedCategories.push(cat);
+  }
+  renderSuggestedChips();
+  renderSelectedChips();
+  clearFieldError("categories");
+}
+
+/** Remove a category by name. */
+function removeCategory(cat) {
+  const idx = state.selectedCategories.indexOf(cat);
+  if (idx >= 0) {
+    state.selectedCategories.splice(idx, 1);
+    renderSuggestedChips();
+    renderSelectedChips();
+  }
+}
+
+/** Add a custom category. */
+function addCustomCategory() {
+  const raw = els.customCategory.value.trim();
+  if (!raw) return;
+
+  // Case-insensitive dedupe
+  const exists = state.selectedCategories.some(
+    (c) => c.toLowerCase() === raw.toLowerCase()
+  );
+  if (exists) {
+    showToast("Category already selected.", "error");
+    els.customCategory.value = "";
+    return;
+  }
+
+  state.selectedCategories.push(raw);
+  els.customCategory.value = "";
+  renderSuggestedChips();
+  renderSelectedChips();
+  clearFieldError("categories");
+}
+
+/* =========================================================
+   Thumbnail preview
+   ========================================================= */
+
+function setThumbnailPreview(url) {
+  const img = els.thumbnailPreview;
+  if (!img) return;
+
+  if (!url || !isValidHttpUrl(url)) {
+    img.src = PLACEHOLDER_SVG;
+    img.dataset.fallbackApplied = "1";
+    return;
+  }
+
+  img.dataset.fallbackApplied = "";
+  img.src = url;
+}
+
+function bindThumbnailFallback() {
+  const img = els.thumbnailPreview;
+  if (!img) return;
+  img.addEventListener("error", () => {
+    if (img.dataset.fallbackApplied === "1") return;
+    img.dataset.fallbackApplied = "1";
+    img.src = PLACEHOLDER_SVG;
+  });
+}
+
+/* =========================================================
+   Field errors
+   ========================================================= */
+const FIELD_ERROR_MAP = {
+  title: "titleError",
+  id: "idError",
+  description: "descError",
+  categories: "categoriesError",
+  thumbnail: "thumbnailError",
+  download: "downloadError",
+  version: "versionError"
+};
+
+function setFieldError(field, message) {
+  const id = FIELD_ERROR_MAP[field];
+  if (!id) return;
+  const el = $(id);
+  if (el) el.textContent = message || "";
+}
+
+function clearFieldError(field) {
+  setFieldError(field, "");
+}
+
+function clearAllFieldErrors() {
+  Object.keys(FIELD_ERROR_MAP).forEach(clearFieldError);
+}
+
+function showFormAlert(message, kind = "error") {
+  if (!els.formAlert) return;
+  els.formAlert.textContent = message || "";
+  els.formAlert.className = "form-alert" + (kind === "success" ? " success" : "");
+  els.formAlert.hidden = !message;
+}
+
+function hideFormAlert() {
+  if (!els.formAlert) return;
+  els.formAlert.hidden = true;
+  els.formAlert.textContent = "";
+}
+
+/* =========================================================
+   Validation
+   ========================================================= */
+
+/** Validate the publish form. Returns { valid, payload } or { valid:false }. */
+function validateForm() {
+  clearAllFieldErrors();
+  hideFormAlert();
+
+  let valid = true;
+
+  const title = els.titleInput.value.trim();
+  if (!title) {
+    setFieldError("title", "Mod title is required.");
+    valid = false;
+  }
+
+  const desc = els.descInput.value.trim();
+  if (!desc) {
+    setFieldError("description", "Description is required.");
+    valid = false;
+  }
+
+  if (state.selectedCategories.length === 0) {
+    setFieldError("categories", "Select at least one category.");
+    valid = false;
+  }
+
+  const thumb = els.thumbnailInput.value.trim();
+  if (!thumb) {
+    setFieldError("thumbnail", "Thumbnail URL is required.");
+    valid = false;
+  } else if (!isValidHttpUrl(thumb)) {
+    setFieldError("thumbnail", "Enter a valid http(s) URL.");
+    valid = false;
+  }
+
+  const dl = els.downloadInput.value.trim();
+  if (!dl) {
+    setFieldError("download", "Download URL is required.");
+    valid = false;
+  } else if (!isValidHttpUrl(dl)) {
+    setFieldError("download", "Enter a valid http(s) URL.");
+    valid = false;
+  }
+
+  const version = els.versionInput.value.trim();
+
+  if (!valid) return { valid: false };
+
+  // Preserve categories in the user's insertion order.
+  const payload = {
+    t: title,
+    d: desc,
+    c: [...state.selectedCategories],
+    p: thumb,
+    l: dl
+  };
+  if (version) payload.v = version;
+
+  return { valid: true, payload };
+}
+
+/* =========================================================
+   Publish flow
+   ========================================================= */
+
+/**
+ * Publish a mod to the repository.
+ * Handles SHA conflicts by re-fetching and retrying.
+ */
+async function publishMod(payload) {
+  const MAX_RETRIES = 3;
+  let attempt = 0;
+
+  while (attempt < MAX_RETRIES) {
+    attempt += 1;
+
+    // 1. Read latest state from GitHub.
+    const file = await getDatabaseFile();
+    const mods = parseDatabase(file.content);
+
+    // 2. Determine the ID. Prefer the one displayed to the admin
+    //    if it is still free; otherwise use the next available.
+    const usedIds = new Set(
+      mods.map((m) => Number(m && m.n)).filter((n) => Number.isInteger(n) && n > 0)
+    );
+    const displayedId = Number(els.modId.value);
+    let newId;
+    if (Number.isInteger(displayedId) && displayedId > 0 && !usedIds.has(displayedId)) {
+      newId = displayedId;
+    } else {
+      newId = computeNextId(mods);
+    }
+
+    // 3. Build the mod object with the exact schema.
+    const newMod = {
+      t: payload.t,
+      d: payload.d,
+      n: newId,
+      c: payload.c,
+      p: payload.p,
+      l: payload.l
+    };
+    if (payload.v) newMod.v = payload.v;
+
+    // 4. Append without touching existing records.
+    const nextMods = mods.concat([newMod]);
+    const nextContent = JSON.stringify(nextMods, null, 2);
+
+    // 5. Commit.
+    try {
+      await putDatabaseFile(
+        nextContent,
+        file.sha,
+        `Add new mod: ${newMod.t} (#${newMod.n})`
+      );
+
+      state.database = nextMods;
+      state.databaseSha = null;
+      return newMod;
+    } catch (error) {
+      if (error.status === 409 && attempt < MAX_RETRIES) {
+        // Another writer modified the file — retry with fresh data.
+        await new Promise((r) => setTimeout(r, 800 * attempt));
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error("Could not publish after multiple attempts due to concurrent changes.");
+}
+
+/* =========================================================
+   Success view
+   ========================================================= */
+
+function showSuccess(mod) {
+  const pageUrl = `${CONFIG.siteUrl}/mod/${mod.n}.html`;
+
+  els.successTitle.textContent = mod.t;
+  els.successId.textContent = `#${mod.n}`;
+  els.successCategories.textContent = mod.c.join(", ");
+  els.successUrl.href = pageUrl;
+  els.successUrl.textContent = pageUrl;
+  els.viewModBtn.href = pageUrl;
+
+  // Thumbnail preview (with fallback)
+  els.successThumb.onerror = () => {
+    els.successThumb.onerror = null;
+    els.successThumb.src = PLACEHOLDER_SVG;
+  };
+  els.successThumb.src = mod.p && isValidHttpUrl(mod.p) ? mod.p : PLACEHOLDER_SVG;
+
+  els.formSection.hidden = true;
+  els.successSection.hidden = false;
+
+  // Refresh stats in the background.
+  loadDatabase({ showLoading: false });
+
+  // Scroll the success card into view.
+  els.successSection.scrollIntoView({
+    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    block: "start"
+  });
+
+  showToast(`Mod “${mod.t}” published as #${mod.n}.`, "success");
+}
+
+function hideSuccess() {
+  els.successSection.hidden = true;
+  els.formSection.hidden = false;
+}
+
+/* =========================================================
+   Form reset
+   ========================================================= */
+
+function isFormDirty() {
+  return Boolean(
+    els.titleInput.value.trim() ||
+    els.descInput.value.trim() ||
+    els.thumbnailInput.value.trim() ||
+    els.downloadInput.value.trim() ||
+    els.versionInput.value.trim() ||
+    state.selectedCategories.length > 0
+  );
+}
+
+function resetForm({ force = false } = {}) {
+  if (!force && isFormDirty()) {
+    const ok = window.confirm("Clear all entered data? This cannot be undone.");
+    if (!ok) return;
+  }
+
+  els.titleInput.value = "";
+  els.descInput.value = "";
+  els.thumbnailInput.value = "";
+  els.downloadInput.value = "";
+  els.versionInput.value = "";
+  els.customCategory.value = "";
+
+  state.selectedCategories = [];
+  renderSuggestedChips();
+  renderSelectedChips();
+
+  setThumbnailPreview("");
+  clearAllFieldErrors();
+  hideFormAlert();
+}
+
+/* =========================================================
+   Auth flow
+   ========================================================= */
+
+function showAuth() {
+  els.authView.hidden = false;
+  els.dashboardView.hidden = true;
+  els.authError.hidden = true;
+  els.tokenInput.value = "";
+  els.tokenInput.type = "password";
+  els.toggleTokenBtn.textContent = "Show";
+}
+
+function showDashboard() {
+  els.authView.hidden = true;
+  els.dashboardView.hidden = false;
+  els.statusPill.classList.add("is-connected");
+  els.statusPill.textContent = state.user ? `Connected · ${state.user.login}` : "Connected";
+}
+
+async function handleAuthSubmit(event) {
+  event.preventDefault();
+
+  const token = els.tokenInput.value.trim();
+  if (!token) {
+    els.authError.textContent = "Please enter a Personal Access Token.";
+    els.authError.hidden = false;
+    return;
+  }
+
+  // Basic format hint (still validated by GitHub).
+  if (!/^(ghp_|github_pat_|gho_|ghu_|ghs_|ghr_)/.test(token) && !/^[a-f0-9]{40}$/i.test(token)) {
+    els.authError.textContent =
+      "That doesn't look like a GitHub token. Expected a token starting with ghp_ or github_pat_.";
+    els.authError.hidden = false;
+    return;
+  }
+
+  els.authError.hidden = true;
+  setLoading(els.authBtn, true);
+
+  try {
+    const { user } = await validateToken(token);
+    await verifyRepoAccess(token);
+
+    // Success — persist.
+    try {
+      localStorage.setItem(CONFIG.tokenKey, token);
+    } catch (storageError) {
+      showToast("Could not persist token to localStorage.", "error");
+    }
+
+    state.token = token;
+    state.user = user;
+
+    els.tokenInput.value = "";
+    showDashboard();
+    await loadDatabase();
+  } catch (error) {
+    els.authError.textContent = error.message || "Authentication failed.";
+    els.authError.hidden = false;
+    state.token = null;
+    state.user = null;
+  } finally {
+    setLoading(els.authBtn, false);
+  }
+}
+
+function logout() {
+  if (!window.confirm("Log out and remove the saved token from this browser?")) return;
+
+  try {
+    localStorage.removeItem(CONFIG.tokenKey);
+  } catch (error) { /* ignore */ }
+
+  state.token = null;
+  state.user = null;
+  state.database = null;
+  state.databaseSha = null;
+  state.selectedCategories = [];
+  state.publishing = false;
+
+  els.titleInput.value = "";
+  els.descInput.value = "";
+  els.thumbnailInput.value = "";
+  els.downloadInput.value = "";
+  els.versionInput.value = "";
+  els.customCategory.value = "";
+  els.modId.value = "—";
+  els.totalModsValue.textContent = "—";
+  els.nextIdValue.textContent = "—";
+
+  hideSuccess();
+  renderSuggestedChips();
+  renderSelectedChips();
+  setThumbnailPreview("");
+  clearAllFieldErrors();
+  hideFormAlert();
+
+  showAuth();
+  showToast("Logged out.");
+}
+
+/* =========================================================
+   Publish handler
+   ========================================================= */
+
+async function handlePublish(event) {
+  event.preventDefault();
+
+  if (state.publishing) return;
+
+  const { valid, payload } = validateForm();
+  if (!valid) {
+    showFormAlert("Please fix the highlighted fields before publishing.");
+    return;
+  }
+
+  state.publishing = true;
+  setLoading(els.publishBtn, true);
+  hideFormAlert();
+
+  try {
+    const newMod = await publishMod(payload);
+    // Reset form silently so the "Publish another" state is clean.
+    resetForm({ force: true });
+    showSuccess(newMod);
+  } catch (error) {
+    showFormAlert(error.message || "Publishing failed. Please try again.");
+    showToast("Publishing failed.", "error");
+  } finally {
+    state.publishing = false;
+    setLoading(els.publishBtn, false);
+  }
+}
+
+/* =========================================================
+   Event wiring
+   ========================================================= */
+
+function bindEvents() {
+  /* ---- Auth ---- */
+  els.authForm.addEventListener("submit", handleAuthSubmit);
+
+  els.toggleTokenBtn.addEventListener("click", () => {
+    const isPassword = els.tokenInput.type === "password";
+    els.tokenInput.type = isPassword ? "text" : "password";
+    els.toggleTokenBtn.textContent = isPassword ? "Hide" : "Show";
+    els.tokenInput.focus();
+  });
+
+  /* ---- Header ---- */
+  els.logoutBtn.addEventListener("click", logout);
+
+  /* ---- Stats ---- */
+  els.refreshStatsBtn.addEventListener("click", () => loadDatabase());
+
+  /* ---- Form ---- */
+  els.modForm.addEventListener("submit", handlePublish);
+
+  els.resetBtn.addEventListener("click", () => resetForm());
+
+  els.refreshIdBtn.addEventListener("click", async () => {
+    setLoading(els.refreshIdBtn, true);
+    try {
+      await loadDatabase({ showLoading: false });
+      showToast("Next available ID refreshed.");
+    } catch (error) {
+      showToast("Could not refresh the ID.", "error");
+    } finally {
+      setLoading(els.refreshIdBtn, false);
+    }
+  });
+
+  /* ---- Categories ---- */
+  els.suggestedChips.addEventListener("click", (event) => {
+    const chip = event.target.closest("button.chip[data-category]");
+    if (!chip) return;
+    toggleCategory(chip.dataset.category);
+  });
+
+  els.addCategoryBtn.addEventListener("click", addCustomCategory);
+
+  els.customCategory.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addCustomCategory();
+    }
+  });
+
+  /* ---- Thumbnail preview (debounced) ---- */
+  let thumbTimer = null;
+  els.thumbnailInput.addEventListener("input", () => {
+    clearTimeout(thumbTimer);
+    thumbTimer = setTimeout(() => {
+      setThumbnailPreview(els.thumbnailInput.value.trim());
+      clearFieldError("thumbnail");
+    }, 300);
+  });
+
+  /* ---- Success actions ---- */
+  els.publishAnotherBtn.addEventListener("click", () => {
+    hideSuccess();
+    els.titleInput.focus();
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+    });
+  });
+
+  els.copyUrlBtn.addEventListener("click", async () => {
+    const url = els.successUrl.href;
+    if (!url) return;
+    const ok = await copyToClipboard(url);
+    showToast(ok ? "Mod URL copied to clipboard." : "Could not copy URL.", ok ? "success" : "error");
+  });
+
+  /* ---- Prevent accidental navigation with unsaved data ---- */
+  window.addEventListener("beforeunload", (event) => {
+    if (state.publishing) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  });
+}
+
+/* =========================================================
+   Boot
+   ========================================================= */
+
+async function boot() {
+  bindEvents();
+  bindThumbnailFallback();
+  renderSuggestedChips();
+  renderSelectedChips();
+  setThumbnailPreview("");
+
+  els.modId.value = "—";
+
+  // Restore token from localStorage, if present.
+  let savedToken = null;
+  try {
+    savedToken = localStorage.getItem(CONFIG.tokenKey);
+  } catch (error) { /* storage blocked */ }
+
+  if (!savedToken) {
+    showAuth();
+    return;
+  }
+
+  // Validate the saved token before showing the dashboard.
+  showAuth();
+  els.authBtn.classList.add("is-loading");
+  els.authBtn.disabled = true;
+
+  try {
+    const { user } = await validateToken(savedToken);
+    await verifyRepoAccess(savedToken);
+
+    state.token = savedToken;
+    state.user = user;
+
+    showDashboard();
+    await loadDatabase();
+  } catch (error) {
+    try { localStorage.removeItem(CONFIG.tokenKey); } catch (e) { /* ignore */ }
+    state.token = null;
+    state.user = null;
+    els.authError.textContent =
+      "Your saved session is no longer valid. Please authenticate again.";
+    els.authError.hidden = false;
+    showAuth();
+  } finally {
+    els.authBtn.classList.remove("is-loading");
+    els.authBtn.disabled = false;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", boot);
+
+// Expose a tiny debug hook without leaking the token.
+window.BFAdmin = {
+  config: Object.freeze({ owner: CONFIG.owner, repo: CONFIG.repo, branch: CONFIG.branch }),
+  get status() {
+    return {
+      authenticated: Boolean(state.token),
+      user: state.user ? state.user.login : null,
+      mods: state.database ? state.database.length : 0
+    };
+  }
+};
+})();
+</script>
+
+</body>
+</html>
