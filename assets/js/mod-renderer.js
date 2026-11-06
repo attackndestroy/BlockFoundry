@@ -1,9 +1,8 @@
 /* ============================================================
    Block Foundry — mod-renderer.js
    ------------------------------------------------------------
-   Loaded by every /mod/N.html wrapper. Expects:
-
-     window.MOD_ID  — integer id of the mod to render
+   Loaded by every /mod/N.html wrapper.
+   Auto-detects the mod ID from the URL filename (e.g., 0.html -> 0).
 
    Fetches:
      /mod/tmp.html   — shared template
@@ -11,18 +10,25 @@
 
    Injects the merged HTML into <div id="app">, then updates
    <title>, <meta name="description">, and Open Graph tags.
-
-   All user-facing fields from mods.json are HTML-escaped before
-   injection. URLs are validated to only allow http(s).
    ============================================================ */
 
 (function () {
   'use strict';
 
-  var MOD_ID = window.MOD_ID;
+  // ------------------------------------------------------------
+  // 1. AUTO-DETECT MOD ID FROM URL
+  // ------------------------------------------------------------
+  var path = window.location.pathname;
+  var filename = path.substring(path.lastIndexOf('/') + 1); 
+  var idStr = filename.replace('.html', '');               
+  var MOD_ID = parseInt(idStr, 10);                        
+
+  // Ignore execution if the template is opened directly
+  if (filename === 'tmp.html') return; 
+
   var FETCH_TIMEOUT = 12000; // ms
 
-  /* ---------- helpers ---------- */
+  /* ---------- HELPERS ---------- */
 
   function escapeHTML(value) {
     if (value === null || value === undefined) return '';
@@ -34,12 +40,10 @@
       .replace(/'/g, '&#39;');
   }
 
-  // Preserve line breaks in plain-text descriptions
   function formatDescription(value) {
     return escapeHTML(value).replace(/\r?\n/g, '<br>');
   }
 
-  // Only allow http/https or same-origin relative URLs
   function safeUrl(value, fallback) {
     if (!value) return fallback || '#';
     try {
@@ -81,14 +85,14 @@
       '</div>';
   }
 
-  /* ---------- guard ---------- */
+  /* ---------- GUARD ---------- */
 
-  if (typeof MOD_ID !== 'number' || !isFinite(MOD_ID)) {
+  if (isNaN(MOD_ID)) {
     showError('404', 'Invalid mod identifier.');
     return;
   }
 
-  /* ---------- main ---------- */
+  /* ---------- MAIN ---------- */
 
   Promise.all([
     fetchWithTimeout('/mod/tmp.html', FETCH_TIMEOUT).then(function (res) {
@@ -112,6 +116,14 @@
       return;
     }
 
+    // Process screenshots array into HTML img tags
+    var screenshotsHtml = '';
+    if (Array.isArray(mod.screenshots) && mod.screenshots.length > 0) {
+      screenshotsHtml = mod.screenshots.map(function (src) {
+        return '<img class="gallery-img" src="' + safeUrl(src, '') + '" alt="' + escapeHTML(mod.name) + ' screenshot" loading="lazy">';
+      }).join('');
+    }
+
     // Build final HTML
     var html = template
       .replace(/\{\{name\}\}/g,        escapeHTML(mod.name || 'Untitled Mod'))
@@ -121,7 +133,8 @@
       .replace(/\{\{type\}\}/g,        escapeHTML(mod.type || 'unknown'))
       .replace(/\{\{version\}\}/g,     escapeHTML(mod.version || '—'))
       .replace(/\{\{mcVersion\}\}/g,   escapeHTML(mod.mcVersion || '—'))
-      .replace(/\{\{downloadUrl\}\}/g, safeUrl(mod.downloadUrl, '#'));
+      .replace(/\{\{downloadUrl\}\}/g, safeUrl(mod.downloadUrl, '#'))
+      .replace(/\{\{screenshots\}\}/g, screenshotsHtml);
 
     var app = document.getElementById('app');
     if (!app) {
@@ -130,7 +143,7 @@
     }
     app.innerHTML = html;
 
-    /* ---------- SEO updates ---------- */
+    /* ---------- SEO UPDATES ---------- */
     var pageTitle = (mod.name || 'Mod') + ' — Block Foundry';
     var rawDesc   = (mod.description || '').replace(/\s+/g, ' ').trim();
     var pageDesc  = rawDesc.slice(0, 158) + (rawDesc.length > 158 ? '…' : '');
