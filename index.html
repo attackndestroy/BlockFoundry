@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+
+  <title>Block Foundry — Minecraft Mods, Addons & Packs</title>
+  <meta name="description" content="Download the latest Minecraft mods, addons, and packs. Curated for Java and Bedrock. Free and updated regularly.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Block Foundry">
+  <meta property="og:title" content="Block Foundry — Minecraft Mods, Addons & Packs">
+  <meta property="og:description" content="Download the latest Minecraft mods, addons, and packs.">
+  <meta property="og:image" content="https://blockfoundry.attdes.online/header.png">
+  <meta property="og:url" content="https://blockfoundry.attdes.online/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Block Foundry — Minecraft Mods">
+  <meta name="twitter:description" content="Download the latest Minecraft mods, addons, and packs.">
+  <meta name="twitter:image" content="https://blockfoundry.attdes.online/header.png">
+
+  <link rel="canonical" href="https://blockfoundry.attdes.online/">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- ============================================================
+       INLINE STYLES (will be extracted to /assets/css/style.css)
+       Shared with tmp.html: variables, header, footer, base
+       Page-specific: hero, nav, mods grid, cards
+       ============================================================ -->
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1c1c1c;
+      --border: #2a2a2a;
+      --text: #e5e5e5;
+      --text-muted: #9ca3af;
+      --accent: #facc15;
+      --accent-hover: #fde047;
+      --accent-fg: #0a0a0a;
+      --radius: 8px;
+    }
+
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    a { color: inherit; }
+
+    /* ---------- Header (shared) ---------- */
+    .bf-header {
+      width: 100%;
+      background: #000;
+      border-bottom: 1px solid var(--border);
+    }
+    .bf-header > a {
+      display: block;
+      max-width: 3000px;
+      margin: 0 auto;
+      line-height: 0;
+    }
+    .bf-banner {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* ---------- Nav ---------- */
+    .bf-nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      flex-wrap: wrap;
+    }
+    .bf-nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s, color 0.15s;
+    }
+    .bf-nav a:hover {
+      background: var(--surface-2);
+      color: var(--accent);
+    }
+    .bf-nav a.active {
+      color: var(--accent);
+      background: var(--surface-2);
+    }
+
+    /* ---------- Hero ---------- */
+    .bf-hero {
+      text-align: center;
+      padding: 56px 16px 40px;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .bf-hero-title {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 800;
+      margin: 0 0 14px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .bf-hero-title span { color: var(--accent); }
+    .bf-hero-sub {
+      font-size: clamp(15px, 2.2vw, 18px);
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* ---------- Mods section ---------- */
+    .bf-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 64px;
+    }
+    .bf-section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .bf-section-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bf-section-title::before {
+      content: "";
+      width: 4px;
+      height: 20px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .bf-section-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ---------- Mods grid ---------- */
+    .bf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    /* ---------- Mod card ---------- */
+    .bf-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .bf-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 28px rgba(250, 204, 21, 0.12);
+    }
+    .bf-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .bf-card-thumb {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+    .bf-card-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+    .bf-card:hover .bf-card-thumb img {
+      transform: scale(1.05);
+    }
+
+    .bf-card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--accent);
+      color: var(--accent-fg);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .bf-card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .bf-card-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .bf-card:hover .bf-card-title { color: var(--accent); }
+
+    .bf-card-desc {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .bf-card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+    .bf-card-meta span {
+      font-size: 11px;
+      padding: 3px 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ---------- Loading & empty states ---------- */
+    .bf-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .bf-state-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+    .bf-state p { margin: 0; font-size: 14px; }
+
+    .bf-spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: bf-spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes bf-spin { to { transform: rotate(360deg); } }
+
+    /* ---------- Footer (shared) ---------- */
+    .bf-footer {
+      text-align: center;
+      padding: 24px 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 640px) {
+      .bf-hero { padding: 36px 16px 28px; }
+      .bf-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+      .bf-card-body { padding: 12px 12px 14px; }
+      .bf-card-title { font-size: 15px; }
+      .bf-nav { padding: 8px; gap: 2px; }
+      .bf-nav a { padding: 6px 10px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="bf-header">
+    <a href="/" aria-label="Block Foundry home">
+      <img src="/header.png" alt="Block Foundry" class="bf-banner" width="3000" height="300">
+    </a>
+  </header>
+
+  <!-- ============ NAV ============ -->
+  <nav class="bf-nav" aria-label="Primary">
+    <a href="/" class="active">Home</a>
+    <a href="/how-to-install.html">Install</a>
+    <a href="/pages/about-us.html">About</a>
+    <a href="/pages/contact.html">Contact</a>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="bf-hero">
+    <h1 class="bf-hero-title">Block <span>Foundry</span></h1>
+    <p class="bf-hero-sub">Fresh Minecraft mods, addons, and packs — curated and ready to install.</p>
+  </section>
+
+  <!-- ============ MODS ============ -->
+  <section class="bf-section" aria-labelledby="latest-title">
+    <div class="bf-section-head">
+      <h2 id="latest-title" class="bf-section-title">Latest Mods</h2>
+      <span id="mods-count" class="bf-section-count" aria-live="polite"></span>
+    </div>
+
+    <div id="mods-grid" class="bf-grid">
+      <div class="bf-state">
+        <div class="bf-spinner"></div>
+        <p>Loading mods…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bf-footer">
+    All rights Reserved ATTDES © 2026
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>
