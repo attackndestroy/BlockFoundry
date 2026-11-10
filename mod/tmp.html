@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-field="t">Mod Template</title>
+  
+  <style>
+    /* Global Dark Theme Style */
+    :root {
+      --bg-color: #0a0a0a;
+      --card-bg: #121212;
+      --accent-color: #ffde00; /* Yellow Accent */
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border-color: #222;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Standard Ad Banner Box */
+    .ad-banner {
+      width: 100%;
+      background: #121212;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      border-radius: 8px;
+      padding: 10px;
+      overflow: hidden;
+      min-height: 60px;
+    }
+
+    /* Main Card */
+    .mod-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .mod-title {
+      font-size: 2rem;
+      color: var(--accent-color);
+      margin-bottom: 10px;
+    }
+
+    .mod-meta {
+      display: flex;
+      gap: 15px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Thumbnail 16:9 Aspect Ratio Container */
+    .poster-box {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .poster-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .categories {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: #222;
+      color: var(--accent-color);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      border: 1px solid #333;
+    }
+
+    .mod-description {
+      font-size: 1.05rem;
+      margin-bottom: 25px;
+      white-space: pre-line;
+    }
+
+    /* Video Container */
+    .video-box {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      margin: 20px 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .video-box iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Screenshots Grid */
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .screenshots-grid img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Action Buttons */
+    .btn-download {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 16px;
+      background: var(--accent-color);
+      color: #000;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.2s ease-in-out;
+      margin-top: 20px;
+    }
+    .btn-download:hover {
+      background: #e6c800;
+      transform: translateY(-2px);
+    }
+
+    .extra-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-extra {
+      flex: 1;
+      min-width: 200px;
+      text-align: center;
+      padding: 12px;
+      background: #1e1e1e;
+      color: var(--accent-color);
+      border: 1px solid #333;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: 0.2s ease-in-out;
+    }
+    .btn-extra:hover {
+      background: #252525;
+      border-color: var(--accent-color);
+    }
+
+    /* Related Mods Section */
+    .related-section {
+      margin-top: 40px;
+    }
+    .related-title {
+      font-size: 1.4rem;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      border-left: 4px solid var(--accent-color);
+      padding-left: 10px;
+    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    .related-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s;
+    }
+    .related-card:hover {
+      border-color: var(--accent-color);
+      transform: translateY(-3px);
+    }
+    .related-img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+    .related-info {
+      padding: 12px;
+    }
+    .related-card-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Ad Banner -->
+    <div class="ad-banner">
+      <script>
+        atOptions = {
+          'key' : '05f1dff3687a2856b0701b757c60bd8e',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bellnewyork.org/22/05f1dff3687a2856b0701b757c60bd8e"></script>
+    </div>
+
+    <div class="mod-card">
+      <h1 class="mod-title" data-field="t">Loading Title...</h1>
+
+      <div class="mod-meta">
+        <span>Author: <strong data-field="a">-</strong></span>
+        <span>Version: <strong data-field="v">-</strong></span>
+        <span>Date: <strong data-field="h">-</strong></span>
+      </div>
+
+      <!-- Main Image (16:9) -->
+      <div class="poster-box">
+        <img data-field="p" src="" alt="Mod Cover">
+      </div>
+
+      <!-- Categories -->
+      <div class="categories" data-field="c"></div>
+
+      <!-- Description -->
+      <p class="mod-description" data-field="d"></p>
+
+      <!-- Mid Ad Banner (تم تحديثه بالسكريبت الجديد الذي طلبته) -->
+      <div class="ad-banner">
+        <script async="async" data-cfasync="false" src="https://bellnewyork.org/21/53b17d8e3f98a7e92651d7bac25e8221"></script>
+        <div id="container-53b17d8e3f98a7e92651d7bac25e8221"></div>
+      </div>
+
+      <!-- Video Embed -->
+      <div class="video-box" data-field="youtube-box" style="display: none;">
+        <iframe data-field="youtube" src="" allowfullscreen></iframe>
+      </div>
+
+      <!-- Screenshots -->
+      <h3 style="margin-top: 20px; color: var(--accent-color);">Screenshots</h3>
+      <div class="screenshots-grid" data-field="s"></div>
+
+      <!-- Download Primary Button -->
+      <a data-field="l" href="#" target="_blank" class="btn-download">DOWNLOAD MOD</a>
+
+      <!-- Extra Buttons (APK & Installer) -->
+      <div class="extra-buttons">
+        <a href="https://link.attdes.online/dlmcapk" target="_blank" class="btn-extra">Download Minecraft APK</a>
+        <a href="https://link.attdes.online/dlmiapk" target="_blank" class="btn-extra">Download Mod installer</a>
+      </div>
+    </div>
+
+    <!-- Independent Ad Banner -->
+    <div class="ad-banner">
+      <script>
+        atOptions = {
+          'key' : '05f1dff3687a2856b0701b757c60bd8e',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bellnewyork.org/22/05f1dff3687a2856b0701b757c60bd8e"></script>
+    </div>
+
+    <!-- Related Mods Section -->
+    <div class="related-section">
+      <h3 class="related-title">You May Also Like</h3>
+      <div class="related-grid" data-field="related-mods">
+        <!-- Will be filled dynamically -->
+      </div>
+    </div>
+
+    <!-- Bottom Ad Banner -->
+    <div class="ad-banner">
+      <script>
+        atOptions = {
+          'key' : '05f1dff3687a2856b0701b757c60bd8e',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bellnewyork.org/22/05f1dff3687a2856b0701b757c60bd8e"></script>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      ©2026 - ATTDES.online
+    </footer>
+
+  </div>
+
+<script data-cfasync="false" src="https://bellnewyork.org/14/3ee0a59238afb3b58a2e010865b2be7d"></script>
+  <script data-cfasync="false" src="https://accountut.com/1/cc5161ff9a6713532c725b3fb39df93c"></script>
+</body>
+</html>
