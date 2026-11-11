@@ -13,13 +13,17 @@
     async function initPage() {
       const path = window.location.pathname;
       const fileName = path.substring(path.lastIndexOf('/') + 1);
-      const modId = parseInt(fileName.replace('.html', '')) || 1;
+      const modId = parseInt(fileName.replace(/\.html$/i, '')) || 1;
 
       try {
         const [templateRes, dataRes] = await Promise.all([
           fetch('tmp.html'),
           fetch('data.json')
         ]);
+
+        if (!templateRes.ok || !dataRes.ok) {
+          throw new Error('Failed to fetch template or data');
+        }
 
         const templateText = await templateRes.text();
         const dataList = await dataRes.json();
@@ -34,8 +38,7 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(templateText, 'text/html');
 
-        doc.title = item.t;
-        doc.querySelector('[data-field="t"]').textContent = item.t;
+        doc.querySelectorAll('[data-field="t"]').forEach(el => el.textContent = item.t);
         doc.querySelector('[data-field="a"]').textContent = item.a;
         doc.querySelector('[data-field="v"]').textContent = item.v;
         doc.querySelector('[data-field="h"]').textContent = item.h;
@@ -56,13 +59,17 @@
 
         const screenBox = doc.querySelector('[data-field="s"]');
         screenBox.innerHTML = '';
-        if (Array.isArray(item.s)) {
+        if (Array.isArray(item.s) && item.s.length > 0) {
           item.s.forEach(imgUrl => {
             const img = doc.createElement('img');
             img.src = imgUrl;
             img.alt = 'Screenshot';
             screenBox.appendChild(img);
           });
+        } else {
+          screenBox.style.display = 'none';
+          const screenTitle = screenBox.previousElementSibling;
+          if (screenTitle && screenTitle.tagName === 'H3') screenTitle.style.display = 'none';
         }
 
         if (item.y) {
@@ -72,40 +79,79 @@
           if (videoBox) videoBox.style.display = 'block';
         }
 
-        // --- اقتراح مودات أخرى من JSON ---
         const relatedBox = doc.querySelector('[data-field="related-mods"]');
         if (relatedBox) {
           relatedBox.innerHTML = '';
-          // جلب مودات أخرى (باستثناء المود الحالي)، واختيار حتى 3 مودات
           const otherMods = dataList.filter(m => m.n !== modId).slice(0, 3);
-          
+
+          if (otherMods.length === 0) {
+            const section = relatedBox.closest('.related-section');
+            if (section) section.style.display = 'none';
+          }
+
           otherMods.forEach(mod => {
             const card = doc.createElement('a');
             card.className = 'related-card';
             card.href = `${mod.n}.html`;
-            card.innerHTML = `
-              <img src="${mod.p}" alt="${mod.t}" class="related-img">
-              <div class="related-info">
-                <div class="related-card-title">${mod.t}</div>
-                <div style="font-size: 0.8rem; color: #a0a0a0;">Version: ${mod.v}</div>
-              </div>
-            `;
+
+            const img = doc.createElement('img');
+            img.className = 'related-img';
+            img.src = mod.p;
+            img.alt = mod.t;
+
+            const info = doc.createElement('div');
+            info.className = 'related-info';
+
+            const cardTitle = doc.createElement('div');
+            cardTitle.className = 'related-card-title';
+            cardTitle.textContent = mod.t;
+
+            const ver = doc.createElement('div');
+            ver.style.fontSize = '0.8rem';
+            ver.style.color = '#a0a0a0';
+            ver.textContent = `Version: ${mod.v}`;
+
+            info.appendChild(cardTitle);
+            info.appendChild(ver);
+            card.appendChild(img);
+            card.appendChild(info);
             relatedBox.appendChild(card);
           });
         }
 
         document.open();
-        document.write(doc.documentElement.outerHTML);
+        document.write('<!DOCTYPE html>\n' + doc.documentElement.outerHTML);
         document.close();
 
       } catch (err) {
         console.error("Error loading mod content:", err);
-        document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>Error loading data. Make sure files exist in the same folder.</h2>";
+        
+        let errorMsg = "";
+        
+        if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+          errorMsg = "Network/CORS Error: The browser blocked loading 'tmp.html' or 'data.json'. If you are opening this from your device (file://), please use a web server or GitHub Pages instead.";
+        } else if (err.name === "SyntaxError") {
+          errorMsg = "JSON Error: The file 'data.json' has invalid syntax. Check for missing commas, quotes, or empty values.";
+        } else if (err.message.includes("Cannot set properties of null") || err.message.includes("Cannot read properties of null")) {
+          errorMsg = "Template Error: An element with a specific 'data-field' was not found in 'tmp.html'. Please check your template file.";
+        } else if (err.message.includes("Failed to fetch template or data")) {
+          errorMsg = "404 Error: Could not find 'tmp.html' or 'data.json'. Make sure both files are in the same folder and their names are correct.";
+        } else {
+          errorMsg = "Error details: " + err.message;
+        }
+
+        document.body.innerHTML = `
+          <div style="text-align:center; margin-top:50px; padding: 20px; font-family: sans-serif;">
+            <h2 style="color: #ff4444;">Error Loading Mod</h2>
+            <p style="color: #ffde00; font-size: 1.1rem; max-width: 600px; margin: 20px auto; line-height: 1.6;">${errorMsg}</p>
+            <div style="color: #a0a0a0; font-size: 0.85rem;">Check the console for more details.</div>
+          </div>
+        `;
       }
     }
 
     initPage();
   </script>
-  
+
 </body>
 </html>
