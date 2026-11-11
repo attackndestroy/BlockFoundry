@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin - BlockFoundry</title>
+
   <style>
     :root {
       --bg-color: #0a0a0a;
@@ -13,14 +15,21 @@
       --text-muted: #a0a0a0;
       --border-color: #333;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background-color: var(--bg-color);
+      background: var(--bg-color);
       color: var(--text-main);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 20px;
       line-height: 1.6;
     }
+
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -29,10 +38,28 @@
       border-radius: 12px;
       border: 1px solid var(--border-color);
     }
-    h1 { color: var(--accent-color); margin-bottom: 20px; text-align: center; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; color: var(--text-muted); }
-    input[type="text"], input[type="password"], textarea, input[type="file"] {
+
+    h1 {
+      color: var(--accent-color);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea,
+    input[type="file"] {
       width: 100%;
       padding: 10px;
       background: #1e1e1e;
@@ -41,8 +68,17 @@
       border-radius: 6px;
       font-family: inherit;
     }
-    input:focus, textarea:focus { outline: none; border-color: var(--accent-color); }
-    textarea { resize: vertical; min-height: 100px; }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
     button {
       background: var(--accent-color);
       color: #000;
@@ -53,54 +89,228 @@
       cursor: pointer;
       transition: 0.2s;
     }
-    button:hover { background: #e6c800; }
-    button:disabled { background: #555; color: #999; cursor: not-allowed; }
-    
-    .input-group { display: flex; gap: 10px; }
-    .input-group input { flex: 1; }
-    
-    .badges-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+    button:hover {
+      background: #e6c800;
+    }
+
+    button:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    /* Connection Screen */
+
+    #connectScreen {
+      max-width: 450px;
+      margin: 12vh auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    #connectScreen h1 {
+      font-size: 1.7rem;
+      margin-bottom: 10px;
+    }
+
+    #connectScreen p {
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    #connectBtn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 13px;
+      font-size: 1rem;
+    }
+
+    #connectStatus {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      display: none;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-group input {
+      flex: 1;
+    }
+
+    .badges-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
     .badge {
-      background: #222; color: var(--accent-color);
-      padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;
-      border: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px;
+      background: #222;
+      color: var(--accent-color);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .badge span { cursor: pointer; color: #ff4444; font-weight: bold; }
-    
-    .file-upload-box { margin-top: 10px; padding: 15px; border: 1px dashed var(--border-color); border-radius: 6px; }
-    
-    .publish-btn { width: 100%; margin-top: 25px; padding: 15px; font-size: 1.1rem; }
-    
+
+    .badge span {
+      cursor: pointer;
+      color: #ff4444;
+      font-weight: bold;
+    }
+
+    .file-upload-box {
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px dashed var(--border-color);
+      border-radius: 6px;
+    }
+
+    .publish-btn {
+      width: 100%;
+      margin-top: 25px;
+      padding: 15px;
+      font-size: 1.1rem;
+    }
+
     #status {
-      margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; display: none; font-weight: bold; white-space: pre-wrap;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+      display: none;
+      font-weight: bold;
+      white-space: pre-wrap;
     }
-    .status-success { background: #1b5e20; color: #a5d6a7; display: block !important; }
-    .status-error { background: #b71c1c; color: #ffcdd2; display: block !important; }
-    .status-info { background: #01579b; color: #81d4fa; display: block !important; }
-    
-    .small-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
+
+    .status-success {
+      background: #1b5e20;
+      color: #a5d6a7;
+      display: block !important;
+    }
+
+    .status-error {
+      background: #b71c1c;
+      color: #ffcdd2;
+      display: block !important;
+    }
+
+    .status-info {
+      background: #01579b;
+      color: #81d4fa;
+      display: block !important;
+    }
+
+    .small-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .admin-header h1 {
+      margin: 0;
+      text-align: left;
+    }
+
+    .logout-btn {
+      background: #333;
+      color: white;
+      padding: 8px 14px;
+    }
+
+    .logout-btn:hover {
+      background: #b71c1c;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 18px;
+      }
+
+      #connectScreen {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
-<div class="container">
-  <h1>Publish New Mod - BlockFoundry</h1>
-  
-  <div class="form-group" style="background: #222; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
-    <label>GitHub Personal Access Token (Required for upload)</label>
-    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" oninput="saveToken()">
-    <div class="small-note">Token must have 'repo' scope for attackndestroy/BlockFoundry. Saved locally in your browser.</div>
+<!-- STEP 1: GITHUB CONNECTION -->
+
+<div id="connectScreen">
+
+  <h1>BlockFoundry</h1>
+
+  <p>Connect your GitHub account to access the publishing dashboard.</p>
+
+  <div class="form-group" style="text-align:left;">
+    <label>GitHub Personal Access Token</label>
+
+    <input
+      type="password"
+      id="ghToken"
+      placeholder="Enter your GitHub Token"
+      autocomplete="off"
+    >
+
+    <div class="small-note">
+      Token requires repository access to attackndestroy/BlockFoundry.
+    </div>
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+  <button id="connectBtn" onclick="connectGitHub()">
+    Connect to GitHub
+  </button>
+
+  <div id="connectStatus"></div>
+
+</div>
+
+
+<!-- STEP 2: ADMIN DASHBOARD -->
+
+<div class="container" id="adminPanel" style="display:none;">
+
+  <div class="admin-header">
+    <h1>Publish New Mod</h1>
+    <button class="logout-btn" onclick="disconnectGitHub()">Disconnect</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+
     <div class="form-group">
       <label>Mod ID (n)</label>
-      <input type="text" id="n" readonly style="background: #2a2a2a; color: var(--accent-color);">
+      <input type="text" id="n" readonly style="background:#2a2a2a;color:var(--accent-color);">
     </div>
+
     <div class="form-group">
       <label>Date (h)</label>
-      <input type="text" id="h" readonly style="background: #2a2a2a;">
+      <input type="text" id="h" readonly style="background:#2a2a2a;">
     </div>
+
   </div>
 
   <div class="form-group">
@@ -108,15 +318,18 @@
     <input type="text" id="t" placeholder="Minecraft's CUTEST Mod...">
   </div>
 
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+
     <div class="form-group">
       <label>Author (a)</label>
       <input type="text" id="a" placeholder="Unknown" value="Unknown">
     </div>
+
     <div class="form-group">
       <label>Version (v)</label>
       <input type="text" id="v" placeholder="1.20 / 1.21">
     </div>
+
   </div>
 
   <div class="form-group">
@@ -137,206 +350,522 @@
 
   <div class="form-group">
     <label>Categories (c)</label>
+
     <div class="input-group">
       <input type="text" id="catInput" placeholder="Type category and click Add...">
       <button type="button" onclick="addCategory()">Add</button>
     </div>
+
     <div class="badges-container" id="catContainer"></div>
   </div>
 
   <div class="file-upload-box">
     <label>Thumbnail Image (p)</label>
     <input type="file" id="p_file" accept="image/png, image/jpeg, image/webp">
-    <div class="small-note">Will be uploaded as {n}.png or {n}.jpg to archive/thumz/</div>
+    <div class="small-note">
+      Will be uploaded as {n}.png or {n}.jpg to archive/thumz/
+    </div>
   </div>
 
-  <div class="file-upload-box" style="margin-top: 15px;">
+  <div class="file-upload-box" style="margin-top:15px;">
     <label>Screenshots (s)</label>
     <input type="file" id="s_files" accept="image/png, image/jpeg, image/webp" multiple>
-    <div class="small-note">Will be numbered sequentially in archive/screenshots/</div>
+    <div class="small-note">
+      Will be numbered sequentially in archive/screenshots/
+    </div>
   </div>
 
-  <button class="publish-btn" id="publishBtn" onclick="publishMod()">Publish Mod</button>
+  <button class="publish-btn" id="publishBtn" onclick="publishMod()">
+    Publish Mod
+  </button>
 
   <div id="status"></div>
+
 </div>
 
+
 <script>
+
   const GH_USER = 'attackndestroy';
   const GH_REPO = 'BlockFoundry';
-  const GH_API = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents`;
-  
+
+  const GH_API =
+    `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents`;
+
   let dataList = [];
   let categories = [];
   let ytID = '';
   let lastScreenshotNumber = 0;
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('h').value = new Date().toISOString().split('T')[0];
-    const savedToken = localStorage.getItem('gh_token');
-    if (savedToken) document.getElementById('ghToken').value = savedToken;
 
-    await fetchInitialData();
+  // INITIALIZATION
+
+  document.addEventListener('DOMContentLoaded', async () => {
+
+    const savedToken = localStorage.getItem('gh_token');
+
+    if (savedToken) {
+      document.getElementById('ghToken').value = savedToken;
+      await connectGitHub(true);
+    }
+
   });
 
-  function saveToken() {
-    localStorage.setItem('gh_token', document.getElementById('ghToken').value.trim());
-  }
 
-  function showStatus(msg, type) {
-    const el = document.getElementById('status');
-    el.className = 'status-' + type;
+  // CONNECTION STATUS
+
+  function showConnectStatus(msg, type) {
+
+    const el = document.getElementById('connectStatus');
+
+    el.textContent = msg;
     el.style.display = 'block';
-    el.innerHTML = msg;
+
+    if (type === 'success') {
+      el.style.background = '#1b5e20';
+      el.style.color = '#a5d6a7';
+    } else if (type === 'error') {
+      el.style.background = '#b71c1c';
+      el.style.color = '#ffcdd2';
+    } else {
+      el.style.background = '#01579b';
+      el.style.color = '#81d4fa';
+    }
+
   }
 
-  async function fetchInitialData() {
-    showStatus('Fetching data from server...', 'info');
-    
+
+  // CONNECT AND VALIDATE TOKEN
+
+  async function connectGitHub(auto = false) {
+
+    const token = document.getElementById('ghToken').value.trim();
+
+    if (!token) {
+      return showConnectStatus('Please enter your GitHub Token.', 'error');
+    }
+
+    const btn = document.getElementById('connectBtn');
+
+    btn.disabled = true;
+    btn.textContent = 'Connecting...';
+
+    showConnectStatus('Checking GitHub credentials...', 'info');
+
     try {
-      const token = document.getElementById('ghToken').value.trim();
-      const headers = token ? { 'Authorization': `token ${token}` } : {};
 
-      const dataRes = await fetch(`https://blockfoundry.attdes.online/mod/data.json?t=${Date.now()}`);
-      dataList = await dataRes.json();
-      
-      localStorage.setItem('cached_data', JSON.stringify(dataList));
-      
-      const maxN = dataList.reduce((max, mod) => mod.n > max ? mod.n : max, 0);
-      document.getElementById('n').value = maxN + 1;
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json'
+      };
 
-      const ssRes = await fetch(`${GH_API}/archive/screenshots`, { headers });
-      if (ssRes.ok) {
-        const ssFiles = await ssRes.json();
-        let maxS = 0;
-        ssFiles.forEach(f => {
-          const match = f.name.match(/^(\d+)\./);
-          if (match && parseInt(match[1]) > maxS) maxS = parseInt(match[1]);
-        });
-        lastScreenshotNumber = maxS;
+      // Check token validity
+
+      const userRes = await fetch('https://api.github.com/user', {
+        headers
+      });
+
+      if (!userRes.ok) {
+        throw new Error('Invalid or expired GitHub Token.');
       }
 
-      showStatus('Data fetched successfully. Next ID: ' + (maxN + 1), 'success');
+      // Check repository access
+
+      const repoRes = await fetch(`${GH_API}/mod/data.json`, {
+        headers
+      });
+
+      if (!repoRes.ok) {
+        throw new Error('Token cannot access BlockFoundry/mod/data.json. Check repository permissions.');
+      }
+
+      // Save token only after successful validation
+
+      localStorage.setItem('gh_token', token);
+
+      showConnectStatus('Connected successfully!', 'success');
+
+      // Hide connection screen
+
+      document.getElementById('connectScreen').style.display = 'none';
+
+      // Show admin dashboard
+
+      document.getElementById('adminPanel').style.display = 'block';
+
+      // Load publishing data
+
+      await fetchInitialData();
+
     } catch (err) {
-      showStatus('Error fetching data: ' + err.message, 'error');
+
+      if (auto) {
+        localStorage.removeItem('gh_token');
+      }
+
+      showConnectStatus(err.message, 'error');
+
+      if (auto) {
+        document.getElementById('ghToken').value = '';
+      }
+
+    } finally {
+
+      btn.disabled = false;
+      btn.textContent = 'Connect to GitHub';
+
     }
+
   }
 
+
+  // DISCONNECT
+
+  function disconnectGitHub() {
+
+    localStorage.removeItem('gh_token');
+
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('connectScreen').style.display = 'block';
+
+    document.getElementById('ghToken').value = '';
+    document.getElementById('connectStatus').style.display = 'none';
+
+  }
+
+
+  // ADMIN STATUS
+
+  function showStatus(msg, type) {
+
+    const el = document.getElementById('status');
+
+    el.className = 'status-' + type;
+    el.style.display = 'block';
+    el.textContent = msg;
+
+  }
+
+
+  // FETCH INITIAL DATA
+
+  async function fetchInitialData() {
+
+    showStatus('Fetching data from server...', 'info');
+
+    try {
+
+      const token = localStorage.getItem('gh_token');
+
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json'
+      };
+
+      const dataRes = await fetch(
+        `https://blockfoundry.attdes.online/mod/data.json?t=${Date.now()}`
+      );
+
+      if (!dataRes.ok) {
+        throw new Error('Failed to fetch website data.json.');
+      }
+
+      dataList = await dataRes.json();
+
+      localStorage.setItem('cached_data', JSON.stringify(dataList));
+
+      const maxN = dataList.reduce(
+        (max, mod) => mod.n > max ? mod.n : max,
+        0
+      );
+
+      document.getElementById('n').value = maxN + 1;
+
+      const ssRes = await fetch(
+        `${GH_API}/archive/screenshots`,
+        { headers }
+      );
+
+      if (ssRes.ok) {
+
+        const ssFiles = await ssRes.json();
+
+        let maxS = 0;
+
+        ssFiles.forEach(f => {
+
+          const match = f.name.match(/^(\d+)\./);
+
+          if (match && parseInt(match[1]) > maxS) {
+            maxS = parseInt(match[1]);
+          }
+
+        });
+
+        lastScreenshotNumber = maxS;
+
+      }
+
+      showStatus(
+        'Data fetched successfully. Next ID: ' + (maxN + 1),
+        'success'
+      );
+
+    } catch (err) {
+
+      showStatus('Error fetching data: ' + err.message, 'error');
+
+    }
+
+  }
+
+
+  // YOUTUBE
+
   function extractYoutubeID() {
+
     const url = document.getElementById('y').value;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+
     const match = url.match(regExp);
+
     if (match && match[2].length === 11) {
       ytID = match[2];
     } else {
       ytID = url.length === 11 ? url : '';
     }
+
   }
+
+
+  // CATEGORIES
 
   function addCategory() {
+
     const input = document.getElementById('catInput');
+
     const val = input.value.trim().toLowerCase();
+
     if (val && !categories.includes(val)) {
+
       categories.push(val);
+
       renderCategories();
+
       input.value = '';
+
     }
+
   }
+
 
   function removeCategory(cat) {
+
     categories = categories.filter(c => c !== cat);
+
     renderCategories();
+
   }
+
 
   function renderCategories() {
+
     const container = document.getElementById('catContainer');
+
     container.innerHTML = '';
+
     categories.forEach(cat => {
+
       const span = document.createElement('span');
+
       span.className = 'badge';
-      span.innerHTML = `${cat} <span onclick="removeCategory('${cat}')">×</span>`;
+
+      const text = document.createTextNode(cat + ' ');
+
+      const remove = document.createElement('span');
+
+      remove.textContent = '×';
+
+      remove.onclick = () => removeCategory(cat);
+
+      span.appendChild(text);
+      span.appendChild(remove);
+
       container.appendChild(span);
+
     });
+
   }
+
+
+  // FILE TO BASE64
 
   function fileToBase64(file) {
+
     return new Promise((resolve, reject) => {
+
       const reader = new FileReader();
+
       reader.readAsDataURL(file);
+
       reader.onload = () => resolve(reader.result.split(',')[1]);
+
       reader.onerror = error => reject(error);
+
     });
+
   }
 
+
+  // UPLOAD TO GITHUB
+
   async function uploadToGitHub(path, file, token) {
+
     const base64 = await fileToBase64(file);
+
     const ext = file.name.split('.').pop();
+
     const filePath = `${path}.${ext}`;
-    
+
     let sha = '';
+
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json'
+    };
+
     const getRes = await fetch(`${GH_API}/${filePath}`, {
-      headers: { 'Authorization': `token ${token}` }
+      headers
     });
+
     if (getRes.ok) {
+
       const data = await getRes.json();
+
       sha = data.sha;
+
     }
 
     const res = await fetch(`${GH_API}/${filePath}`, {
+
       method: 'PUT',
+
       headers: {
-        'Authorization': `token ${token}`,
-        'Content-Type': 'application/json',
+        ...headers,
+        'Content-Type': 'application/json'
       },
+
       body: JSON.stringify({
+
         message: `Upload ${filePath}`,
+
         content: base64,
+
         sha: sha || undefined
+
       })
+
     });
 
-    if (!res.ok) throw new Error(`Failed to upload image ${filePath}`);
+    if (!res.ok) {
+      throw new Error(`Failed to upload image ${filePath}`);
+    }
+
     return filePath;
+
   }
 
+
+  // PUBLISH MOD
+
   async function publishMod() {
-    const token = document.getElementById('ghToken').value.trim();
-    if (!token) return showStatus('Please enter GitHub Token first.', 'error');
+
+    const token = localStorage.getItem('gh_token');
+
+    if (!token) {
+      return showStatus('GitHub Token is missing. Reconnect first.', 'error');
+    }
 
     const btn = document.getElementById('publishBtn');
+
     btn.disabled = true;
+
     showStatus('Uploading images and updating data...', 'info');
 
     try {
+
       const n = parseInt(document.getElementById('n').value);
+
       const t = document.getElementById('t').value.trim();
+
       const a = document.getElementById('a').value.trim();
+
       const v = document.getElementById('v').value.trim();
+
       const d = document.getElementById('d').value.trim();
+
       const l = document.getElementById('l').value.trim();
+
       const h = document.getElementById('h').value;
-      
-      if (!t || !v || !d || !l) throw new Error('Please fill all required fields (Title, Version, Description, Download Link).');
+
+      if (!t || !v || !d || !l) {
+        throw new Error(
+          'Please fill all required fields (Title, Version, Description, Download Link).'
+        );
+      }
+
+      // Thumbnail
 
       let pPath = '';
+
       const pFile = document.getElementById('p_file').files[0];
+
       if (pFile) {
-        pPath = await uploadToGitHub(`archive/thumz/${n}`, pFile, token);
+
+        pPath = await uploadToGitHub(
+          `archive/thumz/${n}`,
+          pFile,
+          token
+        );
+
       } else {
+
         throw new Error('Thumbnail image is required.');
+
       }
+
+
+      // Screenshots
 
       let sPaths = [];
+
       const sFiles = document.getElementById('s_files').files;
+
       if (sFiles.length > 0) {
+
         for (let i = 0; i < sFiles.length; i++) {
+
           lastScreenshotNumber++;
-          const sPath = await uploadToGitHub(`archive/screenshots/${lastScreenshotNumber}`, sFiles[i], token);
+
+          const sPath = await uploadToGitHub(
+            `archive/screenshots/${lastScreenshotNumber}`,
+            sFiles[i],
+            token
+          );
+
           sPaths.push(sPath);
+
         }
+
       }
 
+
+      // New mod object
+
       const newMod = {
+
         n: n,
         t: t,
         d: d,
@@ -348,53 +877,117 @@
         a: a,
         y: ytID,
         h: h
+
       };
 
-      const getDataRes = await fetch(`${GH_API}/mod/data.json`, {
-        headers: { 'Authorization': `token ${token}` }
-      });
-      if (!getDataRes.ok) throw new Error('Failed to fetch data.json from GitHub. Check token permissions.');
-      
+
+      // Fetch current GitHub data
+
+      const headers = {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/vnd.github+json'
+      };
+
+      const getDataRes = await fetch(
+        `${GH_API}/mod/data.json`,
+        { headers }
+      );
+
+      if (!getDataRes.ok) {
+        throw new Error('Failed to fetch data.json from GitHub.');
+      }
+
       const ghData = await getDataRes.json();
-      const currentData = JSON.parse(atob(ghData.content));
-      
+
+      const currentData = JSON.parse(
+        atob(ghData.content.replace(/\s/g, ''))
+      );
+
       currentData.push(newMod);
-      
-      const base64Data = btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2))));
-      
-      const putDataRes = await fetch(`${GH_API}/mod/data.json`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `Add mod ${n}: ${t}`,
-          content: base64Data,
-          sha: ghData.sha
-        })
-      });
 
-      if (!putDataRes.ok) throw new Error('Failed to update data.json on GitHub.');
+      const base64Data = btoa(
+        unescape(
+          encodeURIComponent(
+            JSON.stringify(currentData, null, 2)
+          )
+        )
+      );
 
-      const publishedUrl = `https://blockfoundry.attdes.online/mod/${n}.html`;
-      const clipboardText = `LINK:\n${publishedUrl}\nMinecraft\nhttps://link.attdes.online/dlmcapk\nMod Installer\nhttps://link.attdes.online/dlmiapk`;
+
+      // Update data.json
+
+      const putDataRes = await fetch(
+        `${GH_API}/mod/data.json`,
+        {
+
+          method: 'PUT',
+
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+          },
+
+          body: JSON.stringify({
+
+            message: `Add mod ${n}: ${t}`,
+
+            content: base64Data,
+
+            sha: ghData.sha
+
+          })
+
+        }
+      );
+
+      if (!putDataRes.ok) {
+        throw new Error('Failed to update data.json on GitHub.');
+      }
+
+
+      // Published link
+
+      const publishedUrl =
+        `https://blockfoundry.attdes.online/mod/${n}.html`;
+
+      const clipboardText =
+        `LINK:\n${publishedUrl}\nMinecraft\nhttps://link.attdes.online/dlmcapk\nMod Installer\nhttps://link.attdes.online/dlmiapk`;
+
 
       try {
+
         await navigator.clipboard.writeText(clipboardText);
-        showStatus('Mod published successfully!\n\nText copied to clipboard:\n' + clipboardText, 'success');
+
+        showStatus(
+          'Mod published successfully!\n\nText copied to clipboard:\n' +
+          clipboardText,
+          'success'
+        );
+
       } catch (clipErr) {
-        showStatus('Mod published successfully! (Failed to copy to clipboard automatically).\n\nLink: ' + publishedUrl, 'success');
+
+        showStatus(
+          'Mod published successfully! (Failed to copy to clipboard automatically).\n\nLink: ' +
+          publishedUrl,
+          'success'
+        );
+
       }
 
       btn.disabled = false;
+
       setTimeout(() => location.reload(), 5000);
 
     } catch (err) {
+
       showStatus(err.message, 'error');
+
       btn.disabled = false;
+
     }
+
   }
+
 </script>
 
 </body>
