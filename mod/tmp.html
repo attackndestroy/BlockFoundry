@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,61 +6,77 @@
   <title data-field="t">Mod Template</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --bg-color: #0a0a0a;
+      --card-bg: #121212;
+      --accent-color: #ffde00;
+      --text-main: #e0e0e0;
+      --text-muted: #a0a0a0;
+      --border-color: #222;
     }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0a0a0a;
-      color: #e0e0e0;
-      font-family: Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.6;
       padding: 20px;
     }
 
     .container {
       max-width: 900px;
-      margin: auto;
+      margin: 0 auto;
     }
 
     .ad-banner {
       width: 100%;
-      min-height: 60px;
+      background: #121212;
+      border: 1px solid var(--border-color);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       margin: 20px 0;
+      border-radius: 8px;
+      padding: 10px;
       overflow: hidden;
+      min-height: 60px;
     }
 
     .mod-card {
-      background: #121212;
-      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
 
     .mod-title {
       font-size: 1.5rem;
-      color: #ffde00;
+      color: var(--accent-color);
       margin-bottom: 10px;
     }
 
     .mod-meta {
       display: flex;
-      flex-wrap: wrap;
       gap: 15px;
       font-size: 0.85rem;
-      color: #a0a0a0;
+      color: var(--text-muted);
       margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
     }
 
     .poster-box {
       width: 100%;
       aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
       margin-bottom: 20px;
     }
-
     .poster-box img {
       width: 100%;
       height: 100%;
@@ -70,17 +85,21 @@
 
     .categories {
       display: flex;
-      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-
     .badge {
-      color: #ffde00;
+      background: #222;
+      color: var(--accent-color);
+      padding: 4px 12px;
+      border-radius: 20px;
       font-size: 0.8rem;
+      border: 1px solid #333;
     }
 
     .mod-description {
+      font-size: 1.05rem;
       margin-bottom: 25px;
       white-space: pre-line;
     }
@@ -89,8 +108,9 @@
       width: 100%;
       aspect-ratio: 16 / 9;
       margin: 20px 0;
+      border-radius: 8px;
+      overflow: hidden;
     }
-
     .video-box iframe {
       width: 100%;
       height: 100%;
@@ -103,84 +123,101 @@
       gap: 15px;
       margin: 20px 0;
     }
-
     .screenshots-grid img {
       width: 100%;
       aspect-ratio: 16 / 9;
       object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
     }
 
+    /* ===== الأزرار: بدون hover وبدون transform ===== */
     .btn-download {
       display: block;
       width: 100%;
-      padding: 16px;
-      margin-top: 20px;
-      background: #ffde00;
-      color: #000;
       text-align: center;
+      padding: 16px;
+      background: var(--accent-color);
+      color: #000;
       font-weight: bold;
       font-size: 1.2rem;
       text-decoration: none;
-      cursor: pointer;
+      border-radius: 8px;
+      margin-top: 20px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .btn-download:active {
+      background: #e6c800;
     }
 
     .extra-buttons {
       display: flex;
-      flex-wrap: wrap;
       gap: 10px;
       margin-top: 12px;
+      flex-wrap: wrap;
     }
 
     .btn-extra {
       flex: 1;
       min-width: 200px;
+      text-align: center;
       padding: 12px;
       background: #1e1e1e;
-      color: #ffde00;
-      text-align: center;
+      color: var(--accent-color);
+      border: 1px solid #333;
       font-weight: 600;
+      font-size: 0.95rem;
       text-decoration: none;
-      cursor: pointer;
+      border-radius: 8px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
     }
+    .btn-extra:active {
+      background: #252525;
+      border-color: var(--accent-color);
+    }
+    /* ================================================ */
 
     .related-section {
       margin-top: 40px;
     }
-
     .related-title {
       font-size: 1.4rem;
-      color: #ffde00;
+      color: var(--accent-color);
       margin-bottom: 15px;
+      border-left: 4px solid var(--accent-color);
+      padding-left: 10px;
     }
-
     .related-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
     }
-
     .related-card {
-      display: block;
-      background: #121212;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
       overflow: hidden;
       text-decoration: none;
       color: inherit;
     }
-
     .related-img {
       width: 100%;
       aspect-ratio: 16 / 9;
       object-fit: cover;
     }
-
     .related-info {
       padding: 12px;
     }
-
     .related-card-title {
       font-size: 0.95rem;
       font-weight: bold;
-      color: #e0e0e0;
+      color: var(--text-main);
       margin-bottom: 5px;
     }
 
@@ -188,12 +225,12 @@
       text-align: center;
       margin-top: 40px;
       padding: 20px 0;
-      color: #a0a0a0;
+      color: var(--text-muted);
       font-size: 0.9rem;
+      border-top: 1px solid var(--border-color);
     }
   </style>
 </head>
-
 <body>
 
   <div class="container">
@@ -212,7 +249,6 @@
     </div>
 
     <div class="mod-card">
-
       <h1 class="mod-title" data-field="t">Loading Title...</h1>
 
       <div class="mod-meta">
@@ -238,8 +274,7 @@
         <iframe data-field="youtube" src="" allowfullscreen></iframe>
       </div>
 
-      <h3 style="margin-top: 20px; color: #ffde00;">Screenshots</h3>
-
+      <h3 style="margin-top: 20px; color: var(--accent-color);">Screenshots</h3>
       <div class="screenshots-grid" data-field="s"></div>
 
       <a data-field="l" href="#" target="_blank" rel="noopener noreferrer" class="btn-download">DOWNLOAD MOD</a>
@@ -248,7 +283,6 @@
         <a href="https://link.attdes.online/dlmcapk" target="_blank" rel="noopener noreferrer" class="btn-extra">Download Minecraft APK</a>
         <a href="https://link.attdes.online/dlmiapk" target="_blank" rel="noopener noreferrer" class="btn-extra">Download Mod installer</a>
       </div>
-
     </div>
 
     <div class="ad-banner">
@@ -287,9 +321,7 @@
     </footer>
 
   </div>
-
-  <script data-cfasync="false" src="https://bellnewyork.org/14/3ee0a59238afb3b58a2e010865b2be7d"></script>
+<script data-cfasync="false" src="https://bellnewyork.org/14/3ee0a59238afb3b58a2e010865b2be7d"></script>
   <script data-cfasync="false" src="https://accountut.com/1/cc5161ff9a6713532c725b3fb39df93c"></script>
-
 </body>
 </html>
