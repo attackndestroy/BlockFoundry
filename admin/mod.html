@@ -80,6 +80,20 @@
     .status-info { background: #01579b; color: #81d4fa; display: block !important; }
     
     .small-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
+    
+    #copyBtn {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 30px;
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #copyBtn:hover { background: #e6c800; }
   </style>
 </head>
 <body>
@@ -185,6 +199,7 @@
   let categories = [];
   let ytID = '';
   let lastScreenshotNumber = 0;
+  let clipboardText = '';
 
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('h').value = new Date().toISOString().split('T')[0];
@@ -232,18 +247,14 @@
       const token = document.getElementById('ghToken').value.trim();
       const headers = token ? { 'Authorization': `token ${token}` } : {};
 
-      // 1. Fetch data.json
       const dataRes = await fetch(`https://blockfoundry.attdes.online/mod/data.json?t=${Date.now()}`);
       dataList = await dataRes.json();
       
-      // Save to local memory cache
       localStorage.setItem('cached_data', JSON.stringify(dataList));
       
-      // Determine next ID
       const maxN = dataList.reduce((max, mod) => mod.n > max ? mod.n : max, 0);
       document.getElementById('n').value = maxN + 1;
 
-      // 2. Fetch screenshot directory to find the last number (via GitHub API)
       const ssRes = await fetch(`${GH_API}/archive/screenshots`, { headers });
       if (ssRes.ok) {
         const ssFiles = await ssRes.json();
@@ -340,6 +351,31 @@
     return filePath;
   }
 
+  async function copyToClipboard(btn) {
+    try {
+      await navigator.clipboard.writeText(clipboardText);
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = clipboardText;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+      } catch (e) {
+        btn.textContent = 'Copy Failed';
+        setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+      }
+      document.body.removeChild(ta);
+    }
+  }
+
   async function publishMod() {
     const token = document.getElementById('ghToken').value.trim();
     if (!token) return showStatus('Missing API Token. Please reconnect.', 'error');
@@ -422,20 +458,24 @@
 
       if (!putDataRes.ok) throw new Error('Failed to update data.json on GitHub.');
 
-      // 5. Generate Clipboard Text
+      // 5. Prepare clipboard text (silent - not displayed)
       const pageUrl = `https://blockfoundry.attdes.online/mod/${n}.html`;
-      const clipboardText = `LINK:\n${pageUrl}\nMinecraft\nhttps://link.attdes.online/dlmcapk\nMod Installer\nhttps://link.attdes.online/dlmiapk`;
-      
-      try {
-        await navigator.clipboard.writeText(clipboardText);
-        showStatus('Mod published successfully! Text copied to clipboard:<br><br><pre style="text-align:left; background:#000; padding:10px; border-radius:5px; font-size:0.85rem;">'+clipboardText+'</pre>', 'success');
-      } catch (clipErr) {
-        showStatus('Mod published successfully! (Failed to auto-copy to clipboard, please copy manually):<br><br><pre style="text-align:left; background:#000; padding:10px; border-radius:5px; font-size:0.85rem;">'+clipboardText+'</pre>', 'success');
-      }
+      clipboardText = `LINK:\n${pageUrl}\nMinecraft\nhttps://link.attdes.online/dlmcapk\nMod Installer\nhttps://link.attdes.online/dlmiapk`;
+
+      // 6. Show success + Copy button
+      showStatus('Mod published successfully!', 'success');
+
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.id = 'copyBtn';
+      copyBtn.textContent = 'Copy Link';
+      copyBtn.onclick = () => copyToClipboard(copyBtn);
+      document.getElementById('status').appendChild(copyBtn);
+
+      // Auto-copy silently on success (no visible text)
+      try { await navigator.clipboard.writeText(clipboardText); } catch (e) {}
 
       btn.disabled = false;
-      
-      setTimeout(() => location.reload(), 10000);
 
     } catch (err) {
       showStatus(err.message, 'error');
