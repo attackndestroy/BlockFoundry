@@ -179,6 +179,7 @@
   const GH_USER = 'attackndestroy';
   const GH_REPO = 'BlockFoundry';
   const GH_API = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents`;
+  const BASE_URL = 'https://blockfoundry.attdes.online/';
   
   let dataList = [];
   let categories = [];
@@ -378,16 +379,16 @@
         }
       }
 
-      // 3. Create New Mod Object
+      // 3. Create New Mod Object (with FULL URLs)
       const newMod = {
         n: n,
         t: t,
         d: d,
-        p: pPath,
+        p: BASE_URL + pPath,
         v: v,
         c: categories,
         l: l,
-        s: sPaths,
+        s: sPaths.map(x => BASE_URL + x),
         a: a,
         y: ytID,
         h: h
