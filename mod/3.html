@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading Mod...</title>
+</head>
+<body style="background: #0a0a0a; color: white;">
+
+  <div id="app" style="text-align:center; margin-top:50px; font-size: 1.2rem;">Loading content...</div>
+
+  <script>
+    async function initPage() {
+      const path = window.location.pathname;
+      const fileName = path.substring(path.lastIndexOf('/') + 1);
+      const modId = parseInt(fileName.replace('.html', '')) || 1;
+
+      try {
+        const [templateRes, dataRes] = await Promise.all([
+          fetch('tmp.html'),
+          fetch('data.json')
+        ]);
+
+        const templateText = await templateRes.text();
+        const dataList = await dataRes.json();
+
+        const item = dataList.find(m => m.n === modId);
+
+        if (!item) {
+          document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>Mod Not Found (404)</h2>";
+          return;
+        }
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(templateText, 'text/html');
+
+        doc.title = item.t;
+        doc.querySelector('[data-field="t"]').textContent = item.t;
+        doc.querySelector('[data-field="a"]').textContent = item.a;
+        doc.querySelector('[data-field="v"]').textContent = item.v;
+        doc.querySelector('[data-field="h"]').textContent = item.h;
+        doc.querySelector('[data-field="d"]').textContent = item.d;
+        doc.querySelector('[data-field="p"]').src = item.p;
+        doc.querySelector('[data-field="l"]').href = item.l;
+
+        const catBox = doc.querySelector('[data-field="c"]');
+        catBox.innerHTML = '';
+        if (Array.isArray(item.c)) {
+          item.c.forEach(cat => {
+            const span = doc.createElement('span');
+            span.className = 'badge';
+            span.textContent = cat;
+            catBox.appendChild(span);
+          });
+        }
+
+        const screenBox = doc.querySelector('[data-field="s"]');
+        screenBox.innerHTML = '';
+        if (Array.isArray(item.s)) {
+          item.s.forEach(imgUrl => {
+            const img = doc.createElement('img');
+            img.src = imgUrl;
+            img.alt = 'Screenshot';
+            screenBox.appendChild(img);
+          });
+        }
+
+        if (item.y) {
+          const videoBox = doc.querySelector('[data-field="youtube-box"]');
+          const iframe = doc.querySelector('[data-field="youtube"]');
+          iframe.src = `https://www.youtube.com/embed/${item.y}`;
+          if (videoBox) videoBox.style.display = 'block';
+        }
+
+        // --- اقتراح مودات أخرى من JSON ---
+        const relatedBox = doc.querySelector('[data-field="related-mods"]');
+        if (relatedBox) {
+          relatedBox.innerHTML = '';
+          // جلب مودات أخرى (باستثناء المود الحالي)، واختيار حتى 3 مودات
+          const otherMods = dataList.filter(m => m.n !== modId).slice(0, 3);
+          
+          otherMods.forEach(mod => {
+            const card = doc.createElement('a');
+            card.className = 'related-card';
+            card.href = `${mod.n}.html`;
+            card.innerHTML = `
+              <img src="${mod.p}" alt="${mod.t}" class="related-img">
+              <div class="related-info">
+                <div class="related-card-title">${mod.t}</div>
+                <div style="font-size: 0.8rem; color: #a0a0a0;">Version: ${mod.v}</div>
+              </div>
+            `;
+            relatedBox.appendChild(card);
+          });
+        }
+
+        document.open();
+        document.write(doc.documentElement.outerHTML);
+        document.close();
+
+      } catch (err) {
+        console.error("Error loading mod content:", err);
+        document.body.innerHTML = "<h2 style='text-align:center; margin-top:50px;'>Error loading data. Make sure files exist in the same folder.</h2>";
+      }
+    }
+
+    initPage();
+  </script>
+  
+</body>
+</html>
